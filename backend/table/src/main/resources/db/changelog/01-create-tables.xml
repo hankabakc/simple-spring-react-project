@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--  bu kisim her zaman sabit -->
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- ROLE TABLOSU -->
+
+    <changeSet id="xml-crt-1" author="han">
+        <createTable tableName="role">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- USER TABLOSU -->
+
+    <changeSet id="xml-crt-2" author="han">
+        <createTable tableName="user">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="email" type="VARCHAR(100)">
+                <constraints nullable="false" />
+            </column>
+            <column name="username" type="VARCHAR(50)">
+                <constraints nullable="false" />
+            </column>
+            <column name="role_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_user_role"
+                    referencedTableName="role" referencedColumnNames="id" />
+            </column>
+            <column name="password" type="VARCHAR(100)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- PRODUCT TABLOSU -->
+
+    <changeSet id="xml-crt-3" author="han">
+        <createTable tableName="category">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="xml-crt-4" author="han">
+        <createTable tableName="product">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="category_id" type="BIGINT">
+                <constraints foreignKeyName="fk_product_category" nullable="false"
+                    referencedTableName="category" referencedColumnNames="id" />
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false" />
+            </column>
+            <column name="price" type="DECIMAL(10,2)">
+                <constraints nullable="false" />
+            </column>
+            <column name="explanation" type="VARCHAR(100)"></column>
+        </createTable>
+    </changeSet>
+
+    <!-- KATEGORI TABLOSU -->
+
+
+    <!-- 
+    auto increment -> yeni user da kendisi arttiriyor
+    fk icin ilk once fk ismi sonra referans tablosu ve diger tablosunun pk si (referencedColumnNames)
+    -->
+
+
+</databaseChangeLog>

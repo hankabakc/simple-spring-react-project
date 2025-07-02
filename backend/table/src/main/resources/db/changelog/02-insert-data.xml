@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="xml-ins-1" author="han">
+        <insert tableName="role">
+            <column name="id" value="1"></column>
+            <column name="name" value="admin"></column>
+        </insert>
+        <insert tableName="role">
+            <column name="id" value="2"></column>
+            <column name="name" value="user"></column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="xml-ins-2" author="han">
+        <insert tableName="user">
+            <column name="id" value="1"></column>
+            <column name="email" value="admin@email.com"></column>
+            <column name="username" value="admin"></column>
+            <column name="role_id" value="1"></column>
+            <column name="password" value="1234"></column>
+        </insert>
+    </changeSet>
+
+
+    <changeSet id="xml-ins-3" author="han">
+        <insert tableName="category">
+            <column name="id" value="1"></column>
+            <column name="name" value="Elektronik"></column>
+        </insert>
+        <insert tableName="category">
+            <column name="id" value="2"></column>
+            <column name="name" value="Kitap"></column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="xml-ins-4" author="han">
+        <insert tableName="product">
+            <column name="id" value="1"></column>
+            <column name="category_id" value="1"></column>
+            <column name="name" value="Laptop"></column>
+            <column name="price" value="1043.45"></column>
+            <column name="explanation" value="Cheap Laptop"></column>
+        </insert>
+
+        <insert tableName="product">
+            <column name="id" value="2"></column>
+            <column name="category_id" value="2"></column>
+            <column name="name" value="Don Kisot"></column>
+            <column name="price" value="213.23"></column>
+            <column name="explanation" value="Expensive story book"></column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="xml-ins-5" author="han">
+        <insert tableName="user">
+            <column name="id" value="2"></column>
+            <column name="email" value="abc@abc.com"></column>
+            <column name="username" value="admin"></column>
+            <column name="role_id" value="2"></column>
+            <column name="password" value="admin"></column>
+        </insert>
+    </changeSet>
+
+
+</databaseChangeLog>
