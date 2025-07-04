@@ -8,40 +8,46 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-
 @Entity
-@Table(name="product")
+@Table(name = "product")
 public class Product {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @ManyToOne
-    @JoinColumn(name="category_id", nullable=false)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @Column(nullable=false, length=50)
+    @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable=false, precision= 10 , scale=2)
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    @Column(length=255)
+    @Column(length = 255)
     private String explanation;
 
-    public Product(Long id, Category category, String name, BigDecimal price, String explanation) {
+    @Lob
+    @Column(name = "base64_image")
+    private String base64Image;
+
+    public Product(Long id, Category category, String name, BigDecimal price, String explanation, String base64Image) {
         this.id = id;
         this.category = category;
         this.name = name;
         this.price = price;
         this.explanation = explanation;
+        this.base64Image = base64Image;
     }
 
-    public Product () {}
+    public Product() {
+    }
 
     public Long getId() {
         return id;
@@ -81,6 +87,14 @@ public class Product {
 
     public void setExplanation(String explanation) {
         this.explanation = explanation;
+    }
+
+    public String getBase64Image() {
+        return base64Image;
+    }
+
+    public void setBase64Image(String base64Image) {
+        this.base64Image = base64Image;
     }
 
 }

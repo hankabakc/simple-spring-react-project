@@ -4,7 +4,7 @@ import axios from 'axios';
 import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
 import Content from '@/components/Content';
-import { Product } from '@/types/Type';
+import { Category, Product } from '@/types/Type';
 
 export default function ProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
