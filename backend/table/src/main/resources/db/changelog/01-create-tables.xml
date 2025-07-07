@@ -77,7 +77,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="xml-crt-4" author="han">
+    <changeSet id="xml-crt-5" author="han">
         <createTable tableName="cart_item">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" />
