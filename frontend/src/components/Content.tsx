@@ -13,11 +13,11 @@ export default function Content({ products }: { products: Product[] }) {
                     <div key={product.id} className="bg-amber-400 rounded-lg shadow p-4 flex flex-col items-center">
 
                         <Link href={`/products/${product.id}`}>
-                            <div>
-                                <h2 className="text-lg font-bold">{product.name}</h2>
+                            <a>
+                                <p className="text-lg font-bold">{product.name}</p>
                                 <p className="text-sm">{product.explanation}</p>
                                 <p className="text-md font-semibold">${product.price}</p>
-                            </div>
+                            </a>
                         </Link>
                         <Button variant="contained" sx={{ backgroundColor: 'rgba(80, 10, 190, 1)' }}>Sepete Ekle</Button>
                     </div>

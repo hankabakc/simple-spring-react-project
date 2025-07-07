@@ -72,7 +72,6 @@
                 <constraints nullable="false" />
             </column>
             <column name="explanation" type="VARCHAR(100)"></column>
-            <column name="base64_image" type="TEXT"></column>
         </createTable>
     </changeSet>
 
