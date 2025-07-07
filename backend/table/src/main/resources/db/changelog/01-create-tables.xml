@@ -43,7 +43,7 @@
         </createTable>
     </changeSet>
 
-    <!-- PRODUCT TABLOSU -->
+    <!-- KATEGORI TABLOSU -->
 
     <changeSet id="xml-crt-3" author="han">
         <createTable tableName="category">
@@ -55,6 +55,8 @@
             </column>
         </createTable>
     </changeSet>
+
+    <!-- PRODUCT TABLOSU -->
 
     <changeSet id="xml-crt-4" author="han">
         <createTable tableName="product">
@@ -75,7 +77,25 @@
         </createTable>
     </changeSet>
 
-    <!-- KATEGORI TABLOSU -->
+    <changeSet id="xml-crt-4" author="han">
+        <createTable tableName="cart_item">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="product_name" type="VARCHAR(100)">
+                <constraints nullable="false" />
+            </column>
+            <column name="product_price" type="DECIMAL(10,2)">
+                <constraints nullable="false" />
+            </column>
+            <column name="product_image" type="TEXT">
+                <constraints nullable="false" />
+            </column>
+            <column name="quantity" type="INTEGER">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+    </changeSet>
 
 
     <!-- 
