@@ -1,9 +1,12 @@
 package com.table.table.service;
 
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.table.table.dto.request.ProductRequest;
 import com.table.table.dto.response.ProductResponse;
@@ -18,6 +21,11 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+        this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+    }
+
     public ProductResponse convertResponse(Product product) {
         ProductResponse dto = new ProductResponse();
         dto.setId(product.getId());
@@ -29,20 +37,21 @@ public class ProductService {
         return dto;
     }
 
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
-        this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;
+    @Transactional(readOnly = true)
+    public List<ProductResponse> getAllProducts() {
+        return productRepository.findAll().stream()
+                .map(this::convertResponse)
+                .toList();
     }
 
     @Transactional(readOnly = true)
-    public List<ProductResponse> getAllProducts() {
-        return productRepository.findAll().stream().map(this::convertResponse).toList();
-    }
-
     public ProductResponse getProductById(Long id) {
-        return productRepository.findById(id).map(this::convertResponse).orElse(null);
+        return productRepository.findById(id)
+                .map(this::convertResponse)
+                .orElse(null);
     }
 
+    @Transactional
     public Product createProduct(ProductRequest request) {
         Product product = new Product();
         product.setName(request.getName());
@@ -50,10 +59,19 @@ public class ProductService {
         product.setExplanation(request.getExplanation());
 
         Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Kategori yok"));
+                .orElseThrow(() -> new RuntimeException("Kategori bulunamadı"));
         product.setCategory(category);
+
+        MultipartFile image = request.getImage();
+        if (image != null && !image.isEmpty()) {
+            try {
+                String base64 = Base64.getEncoder().encodeToString(image.getBytes());
+                product.setBase64Image(base64);
+            } catch (IOException e) {
+                throw new RuntimeException("Resim dönüştürme hatası", e);
+            }
+        }
 
         return productRepository.save(product);
     }
-
 }
