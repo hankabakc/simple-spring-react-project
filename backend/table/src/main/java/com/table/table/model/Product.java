@@ -2,10 +2,8 @@ package com.table.table.model;
 
 import java.math.BigDecimal;
 
-import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,7 +34,6 @@ public class Product {
     private String explanation;
 
     @Lob
-    @Basic(fetch = FetchType.EAGER)
     @Column(name = "base64_image")
     private String base64Image;
 
