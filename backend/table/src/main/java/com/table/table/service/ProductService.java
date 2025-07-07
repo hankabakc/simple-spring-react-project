@@ -3,8 +3,10 @@ package com.table.table.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.table.table.dto.ProductRequest;
+import com.table.table.dto.request.ProductRequest;
+import com.table.table.dto.response.ProductResponse;
 import com.table.table.model.Category;
 import com.table.table.model.Product;
 import com.table.table.repository.CategoryRepository;
@@ -16,17 +18,29 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
+    public ProductResponse convertResponse(Product product) {
+        ProductResponse dto = new ProductResponse();
+        dto.setId(product.getId());
+        dto.setName(product.getName());
+        dto.setExplanation(product.getExplanation());
+        dto.setPrice(product.getPrice());
+        dto.setBase64Image(product.getBase64Image());
+        dto.setCategoryName(product.getCategory().getName());
+        return dto;
+    }
+
     public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
     }
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<ProductResponse> getAllProducts() {
+        return productRepository.findAll().stream().map(this::convertResponse).toList();
     }
 
-    public Product getProductById(Long id) {
-        return productRepository.findById(id).orElse(null);
+    public ProductResponse getProductById(Long id) {
+        return productRepository.findById(id).map(this::convertResponse).orElse(null);
     }
 
     public Product createProduct(ProductRequest request) {

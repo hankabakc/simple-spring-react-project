@@ -2,30 +2,37 @@
 
 import React from 'react';
 import { Product } from '@/types/Type';
-import { Button } from '@mui/material';
+import { Card, CardContent, CardActions, Typography, Button, Divider } from '@mui/material';
 
 type Props = {
     product: Product;
 };
 
-function DetailContent({ product }: Props) {
+export default function DetailContent({ product }: Props) {
     return (
         <div className="flex justify-center mt-10">
-            <div className="bg-amber-400 p-10 rounded-xl shadow-lg w-[500px]">
-                <h2 className="text-3xl font-bold mb-4 text-center">{product.name}</h2>
-                <p className="text-xl mb-6 text-center">{product.explanation}</p>
-                <p className="text-2xl font-semibold text-center mb-6">${product.price}</p>
-                <div className="flex justify-center">
+            <Card className="bg-purple-950 border border-blue-500 rounded-xl w-[500px] shadow-none">
+                <CardContent className="p-8">
+                    <Typography variant="h4" className="text-center text-gray-200 font-bold mb-4">
+                        {product.name}
+                    </Typography>
+                    <Divider className="border-blue-500 mb-4" />
+                    <Typography variant="body1" className="text-center text-gray-300 mb-4">
+                        {product.explanation}
+                    </Typography>
+                    <Typography variant="h5" className="text-center text-gray-100 font-semibold mb-4">
+                        ${product.price}
+                    </Typography>
+                </CardContent>
+                <CardActions className="flex justify-center pb-4">
                     <Button
                         variant="contained"
-                        sx={{ backgroundColor: 'rgba(80, 10, 190, 1)' }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
                         Sepete Ekle
                     </Button>
-                </div>
-            </div>
+                </CardActions>
+            </Card>
         </div>
     );
 }
-
-export default DetailContent;

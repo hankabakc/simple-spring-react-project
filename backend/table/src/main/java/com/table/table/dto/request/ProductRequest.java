@@ -1,4 +1,4 @@
-package com.table.table.dto;
+package com.table.table.dto.request;
 
 import java.math.BigDecimal;
 

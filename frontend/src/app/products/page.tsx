@@ -22,6 +22,10 @@ export default function ProductsPage() {
         );
     };
 
+    useEffect(() => {
+        console.log('Products:', products);
+    }, [products]);
+
     // ✔️ Filtrelenmiş liste
     const filteredProducts = selectedCategories.length
         ? products.filter((product) =>

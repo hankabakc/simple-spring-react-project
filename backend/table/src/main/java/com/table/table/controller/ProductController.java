@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.table.table.dto.ProductRequest;
+import com.table.table.dto.request.ProductRequest;
+import com.table.table.dto.response.ProductResponse;
 import com.table.table.model.Product;
 import com.table.table.service.ProductService;
 
@@ -25,12 +26,12 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> getAllProducts() {
+    public List<ProductResponse> getAllProducts() {
         return productService.getAllProducts();
     }
 
     @GetMapping("/{id}")
-    public Product getProductById(@PathVariable Long id) {
+    public ProductResponse getProductById(@PathVariable Long id) {
         return productService.getProductById(id);
     }
 

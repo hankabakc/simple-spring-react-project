@@ -4,11 +4,16 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.table.table.dto.response.CategoryResponse;
 import com.table.table.model.Category;
 import com.table.table.repository.CategoryRepository;
 
 @Service
 public class CategoryService {
+
+    public CategoryResponse convertResponse(Category category) {
+        return new CategoryResponse(category.getId(), category.getName());
+    }
 
     private CategoryRepository categoryRepository;
 
@@ -16,11 +21,11 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    public List<CategoryResponse> getAllCategories() {
+        return categoryRepository.findAll().stream().map(this::convertResponse).toList();
     }
 
-    public Category getCategoryById(Long id) {
-        return categoryRepository.findById(id).orElse(null);
+    public CategoryResponse getCategoryById(Long id) {
+        return categoryRepository.findById(id).map(this::convertResponse).orElse(null);
     }
 }
