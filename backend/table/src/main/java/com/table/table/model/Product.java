@@ -34,7 +34,7 @@ public class Product {
     private String explanation;
 
     @Lob
-    @Column(name = "base64_image")
+    @Column(name = "base64_image", columnDefinition = "TEXT")
     private String base64Image;
 
     public Product(Long id, Category category, String name, BigDecimal price, String explanation, String base64Image) {
