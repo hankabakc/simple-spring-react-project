@@ -48,7 +48,6 @@ public class ProductService {
         product.setName(request.getName());
         product.setPrice(request.getPrice());
         product.setExplanation(request.getExplanation());
-        product.setBase64Image(request.getBase64Image());
 
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Kategori yok"));

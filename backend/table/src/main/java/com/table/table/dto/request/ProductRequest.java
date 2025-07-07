@@ -7,7 +7,6 @@ public class ProductRequest {
     private BigDecimal price;
     private String explanation;
     private Long categoryId;
-    private String base64Image;
 
     public String getName() {
         return name;
@@ -39,13 +38,5 @@ public class ProductRequest {
 
     public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
-    }
-
-    public String getBase64Image() {
-        return base64Image;
-    }
-
-    public void setBase64Image(String base64Image) {
-        this.base64Image = base64Image;
     }
 }
