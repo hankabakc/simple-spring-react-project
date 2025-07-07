@@ -5,7 +5,9 @@
 
     <changeSet id="xml-chg-1" author="han">
         <addColumn tableName="product">
-            <column name="base64_image" type="TEXT"></column>
+            <column name="base64_image" type="TEXT">
+                <constraints nullable="false" />
+            </column>
         </addColumn>
     </changeSet>
 
