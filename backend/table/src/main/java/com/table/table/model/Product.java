@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -33,7 +32,6 @@ public class Product {
     @Column(length = 255)
     private String explanation;
 
-    @Lob
     @Column(name = "base64_image", columnDefinition = "TEXT")
     private String base64Image;
 
