@@ -1,19 +1,18 @@
 package com.table.table.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.table.table.dto.request.ProductRequest;
 import com.table.table.dto.response.ProductResponse;
-import com.table.table.model.Product;
 import com.table.table.service.ProductService;
 
 @RestController
@@ -37,7 +36,9 @@ public class ProductController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Product> createProduct(@ModelAttribute ProductRequest request) {
-        return ResponseEntity.ok(productService.createProduct(request));
+    public ResponseEntity<Map<String, Boolean>> createProduct() {
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("result", true);
+        return ResponseEntity.ok(response);
     }
 }
