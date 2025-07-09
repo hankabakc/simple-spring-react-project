@@ -29,7 +29,7 @@ export default function ProductsPage() {
     // ✔️ Filtrelenmiş liste
     const filteredProducts = selectedCategories.length
         ? products.filter((product) =>
-            selectedCategories.includes(product.category.name)
+            selectedCategories.includes(product.categoryName)
         )
         : products;
 

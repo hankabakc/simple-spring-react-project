@@ -3,10 +3,8 @@ export type Product = {
     name: string;
     price: number;
     explanation: string;
-    category: {
-        id: number;
-        name: string;
-    };
+    categoryName: string;
+    base64Image: string;
 };
 
 export type Category = {

@@ -1,7 +1,7 @@
 'use client';
 
 import { Product } from "@/types/Type";
-import { Card, CardContent, CardActions, Typography, Button, Divider } from "@mui/material";
+import { Card, CardContent, CardActions, Typography, Button, Divider, CardMedia } from "@mui/material";
 import Link from "next/link";
 
 export default function Content({ products }: { products: Product[] }) {
@@ -15,10 +15,19 @@ export default function Content({ products }: { products: Product[] }) {
                     >
                         <Link href={`/products/${product.id}`} className="w-full">
                             <CardContent className="p-6 w-full flex flex-col items-center">
+                                <CardMedia
+                                    component="img"
+                                    image={`data:image/jpeg;base64,${product.base64Image}`}
+                                    alt={product.name}
+                                    className="w-full h-48 object-cover mb-4 rounded"
+                                />
+
                                 <Typography variant="h6" className="text-gray-200 font-bold mb-2 text-center">
                                     {product.name}
                                 </Typography>
+
                                 <Divider className="border-blue-500 w-full mb-2" />
+
                                 <Typography variant="body2" className="text-gray-300 text-center mb-2">
                                     {product.explanation}
                                 </Typography>

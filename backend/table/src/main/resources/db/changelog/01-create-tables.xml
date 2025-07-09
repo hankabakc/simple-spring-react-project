@@ -80,16 +80,12 @@
     <changeSet id="xml-crt-5" author="han">
         <createTable tableName="cart_item">
             <column name="id" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true" />
+                <constraints primaryKey="true" foreignKeyName="fk_cart_item_user_id"
+                    referencedTableName="user" referencedColumnNames="id" />
             </column>
             <column name="product_name" type="VARCHAR(100)">
-                <constraints nullable="false" />
-            </column>
-            <column name="product_price" type="DECIMAL(10,2)">
-                <constraints nullable="false" />
-            </column>
-            <column name="product_image" type="TEXT">
-                <constraints nullable="false" />
+                <constraints nullable="false" foreignKeyName="fk_cart_item_product_name"
+                    referencedTableName="product" referencedColumnNames="name" />
             </column>
             <column name="quantity" type="INTEGER">
                 <constraints nullable="true" />
