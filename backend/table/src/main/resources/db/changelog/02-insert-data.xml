@@ -17,7 +17,7 @@
     </changeSet>
 
     <changeSet id="xml-ins-2" author="han">
-        <insert tableName="user">
+        <insert tableName="users">
             <column name="id" value="1"></column>
             <column name="email" value="admin@email.com"></column>
             <column name="username" value="admin"></column>
@@ -62,12 +62,22 @@
     </changeSet>
 
     <changeSet id="xml-ins-5" author="han">
-        <insert tableName="user">
+        <insert tableName="users">
             <column name="id" value="2"></column>
             <column name="email" value="abc@abc.com"></column>
             <column name="username" value="admin"></column>
-            <column name="role_id" value="2"></column>
+            <column name="role_id" value="1"></column>
             <column name="password" value="admin"></column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="xml-ins-6" author="han">
+        <insert tableName="users">
+            <column name="id" value="3"></column>
+            <column name="email" value="han@gmail.com"></column>
+            <column name="username" value="han"></column>
+            <column name="role_id" value="2"></column>
+            <column name="password" value="han"></column>
         </insert>
     </changeSet>
 
