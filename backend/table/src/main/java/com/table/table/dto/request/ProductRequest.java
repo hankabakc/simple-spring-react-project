@@ -9,7 +9,7 @@ public class ProductRequest {
     private BigDecimal price;
     private String explanation;
     private Long categoryId;
-    private MultipartFile image; // ✔️ yeni eklendi
+    private MultipartFile image;
 
     public String getName() {
         return name;
