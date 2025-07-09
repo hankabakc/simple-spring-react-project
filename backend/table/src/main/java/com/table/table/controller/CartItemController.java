@@ -1,22 +1,29 @@
 package com.table.table.controller;
 
-import com.table.table.dto.request.CartItemRequest;
-import com.table.table.dto.response.CartItemResponse;
-import com.table.table.service.CartItemService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.table.table.dto.request.CartItemRequest;
+import com.table.table.dto.response.CartItemResponse;
+import com.table.table.service.CartItemService;
+
 @RestController
 @RequestMapping("/api/cart")
-public class CartController {
+public class CartItemController {
 
     private final CartItemService cartItemService;
 
-    public CartController(CartItemService cartItemService) {
+    public CartItemController(CartItemService cartItemService) {
         this.cartItemService = cartItemService;
     }
 

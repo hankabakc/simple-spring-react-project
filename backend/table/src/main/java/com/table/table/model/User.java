@@ -10,24 +10,24 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
-    
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable=false, length=100)
+    @Column(nullable = false, length = 100)
     private String email;
 
-    @Column(nullable=false, length=50)
+    @Column(nullable = false, length = 50)
     private String username;
 
     @ManyToOne
-    @JoinColumn(name = "role_id", nullable=false)
+    @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    @Column (nullable=false, length=100)
+    @Column(nullable = false, length = 100)
     private String password;
 
     public User(Long id, String email, String username, Role role, String password) {
@@ -38,9 +38,8 @@ public class User {
         this.password = password;
     }
 
-
-    public User () {}
-
+    public User() {
+    }
 
     public Long getId() {
         return id;
