@@ -1,24 +1,36 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Category } from '@/types/Type';
 import {
-    Paper,
+    Drawer,
+    Box,
     Typography,
     Divider,
     FormControl,
     FormGroup,
     FormControlLabel,
     Checkbox,
+    IconButton
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 type SidebarProps = {
+    open: boolean;
+    onClose: () => void;
+    variant: 'permanent' | 'temporary';
     selected: string[];
     onChange: (category: string, checked: boolean) => void;
 };
 
-export default function Sidebar({ selected, onChange }: SidebarProps) {
+export default function Sidebar({
+    open,
+    onClose,
+    variant,
+    selected,
+    onChange
+}: SidebarProps) {
     const [categories, setCategories] = useState<Category[]>([]);
 
     useEffect(() => {
@@ -28,45 +40,62 @@ export default function Sidebar({ selected, onChange }: SidebarProps) {
             .catch((err) => console.error('Kategori çekme hatası:', err));
     }, []);
 
-    if (!categories.length) {
-        return (
-            <div className="p-4 text-gray-400 text-sm">
-                Kategoriler yükleniyor...
-            </div>
-        );
-    }
-
     return (
-        <Paper
-            elevation={3}
-            className="h-screen w-56 bg-purple-950 flex flex-col p-4 shadow-none border-r border-blue-500"
+        <Drawer
+            variant={variant}
+            open={open}
+            onClose={onClose}
+            sx={{
+                '& .MuiDrawer-paper': {
+                    width: 240,
+                    bgcolor: 'primary.dark',
+                    color: 'grey.100',
+                    p: 2
+                }
+            }}
         >
-            <Typography variant="h6" className="text-gray-200 mb-3">
-                Kategoriler
-            </Typography>
-            <Divider className="mb-3 border-blue-500" />
+            <Box display="flex" flexDirection="column" height="100%">
+                {variant === 'temporary' && (
+                    <Box display="flex" justifyContent="flex-end">
+                        <IconButton onClick={onClose} sx={{ color: 'grey.100' }}>
+                            <CloseIcon />
+                        </IconButton>
+                    </Box>
+                )}
 
-            <FormControl component="fieldset" className="flex-1">
-                <FormGroup className="space-y-2">
-                    {categories.map((cat) => (
-                        <FormControlLabel
-                            key={cat.id}
-                            control={
-                                <Checkbox
-                                    checked={selected.includes(cat.name)}
-                                    onChange={(e) => onChange(cat.name, e.target.checked)}
-                                    className="text-gray-300 hover:bg-purple-800/30 rounded"
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
+                    Kategoriler
+                </Typography>
+
+                <Divider sx={{ mb: 2, borderColor: 'primary.light' }} />
+
+                {!categories.length ? (
+                    <Typography variant="body2" color="grey.400">
+                        Kategoriler yükleniyor...
+                    </Typography>
+                ) : (
+                    <FormControl component="fieldset" sx={{ flex: 1 }}>
+                        <FormGroup>
+                            {categories.map((cat) => (
+                                <FormControlLabel
+                                    key={cat.id}
+                                    control={
+                                        <Checkbox
+                                            checked={selected.includes(cat.name)}
+                                            onChange={(e) => onChange(cat.name, e.target.checked)}
+                                            sx={{
+                                                color: 'grey.300',
+                                                '&.Mui-checked': { color: 'secondary.main' }
+                                            }}
+                                        />
+                                    }
+                                    label={<Typography>{cat.name}</Typography>}
                                 />
-                            }
-                            label={
-                                <Typography className="text-gray-200">
-                                    {cat.name}
-                                </Typography>
-                            }
-                        />
-                    ))}
-                </FormGroup>
-            </FormControl>
-        </Paper>
+                            ))}
+                        </FormGroup>
+                    </FormControl>
+                )}
+            </Box>
+        </Drawer>
     );
 }

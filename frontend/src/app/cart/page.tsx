@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
@@ -25,6 +27,7 @@ type CartItemResponse = {
 type CartPageProps = {
     userId: number;
 };
+
 
 export default function CartPage({ userId }: CartPageProps) {
     const [cartItems, setCartItems] = useState<CartItemResponse[]>([]);

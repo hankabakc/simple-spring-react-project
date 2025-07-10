@@ -8,11 +8,18 @@ import {
     Button,
     ButtonGroup,
     Box,
+    IconButton,
+    Typography
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import MenuIcon from '@mui/icons-material/Menu';
 
-export default function Navbar() {
+type NavbarProps = {
+    onMenuClick?: () => void;
+};
+
+export default function Navbar({ onMenuClick }: NavbarProps) {
     const [search, setSearch] = useState('');
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,33 +27,58 @@ export default function Navbar() {
     };
 
     return (
-        <AppBar
-            position="static"
-            className="bg-purple-950 border-b border-b-blue-500 shadow-none"
-        >
-            <Toolbar className="flex justify-between items-center px-5 h-20">
-                <Box className="flex items-center">
+        <AppBar position="static" color="primary" elevation={1}>
+            <Toolbar
+                sx={{
+                    height: 80,
+                    px: { xs: 2, sm: 4 },
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                }}
+            >
+                {/* Sol Kısım: Menü ve Logo */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    {onMenuClick && (
+                        <IconButton
+                            edge="start"
+                            color="inherit"
+                            onClick={onMenuClick}
+                            sx={{ display: { xs: 'inline-flex', md: 'none' } }}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                    )}
+                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                        MyShop
+                    </Typography>
+                </Box>
+
+                {/* Orta Kısım: Search */}
+                <Box
+                    sx={{
+                        flex: 1,
+                        maxWidth: 400,
+                        mx: 2,
+                        display: { xs: 'none', sm: 'flex' }
+                    }}
+                >
                     <TextField
-                        label="Search"
+                        label="Ara"
                         variant="outlined"
                         size="small"
+                        fullWidth
                         value={search}
                         onChange={handleSearchChange}
                         color="secondary"
-                        className="bg-white rounded"
                     />
                 </Box>
-                <ButtonGroup variant="text" className="space-x-2">
-                    <Button
-                        startIcon={<PersonIcon />}
-                        className="text-gray-200 hover:bg-purple-800/30"
-                    >
+
+                {/* Sağ Kısım: Kullanıcı ve Sepet */}
+                <ButtonGroup variant="text" color="inherit">
+                    <Button startIcon={<PersonIcon />} color="inherit">
                         Kullanıcı
                     </Button>
-                    <Button
-                        startIcon={<ShoppingCartIcon />}
-                        className="text-gray-200 hover:bg-purple-800/30"
-                    >
+                    <Button startIcon={<ShoppingCartIcon />} color="inherit">
                         Sepet
                     </Button>
                 </ButtonGroup>
