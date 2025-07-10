@@ -9,6 +9,18 @@ public class CartItemResponse {
     private BigDecimal productPrice;
     private Integer quantity;
 
+    public CartItemResponse() {
+    }
+
+    public CartItemResponse(Long productId, String productName, String productImage, BigDecimal productPrice,
+            Integer quantity) {
+        this.productId = productId;
+        this.productName = productName;
+        this.productImage = productImage;
+        this.productPrice = productPrice;
+        this.quantity = quantity;
+    }
+
     public Long getProductId() {
         return productId;
     }

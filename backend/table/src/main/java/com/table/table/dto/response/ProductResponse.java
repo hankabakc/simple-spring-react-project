@@ -10,7 +10,18 @@ public class ProductResponse {
     private String base64Image;
     private String categoryName;
 
-    // GETTERS - SETTERS
+    public ProductResponse() {
+    }
+
+    public ProductResponse(Long id, String name, String explanation, BigDecimal price, String base64Image,
+            String categoryName) {
+        this.id = id;
+        this.name = name;
+        this.explanation = explanation;
+        this.price = price;
+        this.base64Image = base64Image;
+        this.categoryName = categoryName;
+    }
 
     public Long getId() {
         return id;

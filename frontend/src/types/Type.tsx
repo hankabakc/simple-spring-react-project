@@ -17,3 +17,9 @@ export type SidebarProps = {
     onChange: (category: string, checked: boolean) => void;
     categories: Category[];
 };
+
+export type User = {
+    id: number;
+    username: string;
+    token: string;
+};
