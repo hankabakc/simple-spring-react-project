@@ -32,8 +32,18 @@ public class CartItemController {
 
     private Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        return userDetails.getId();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("User is not authenticated");
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof UserDetailsImpl userDetails) {
+            return userDetails.getId();
+        } else {
+            throw new RuntimeException("Invalid user details in security context");
+        }
     }
 
     @PostMapping
