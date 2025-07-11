@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Product } from '@/types/Type';
-import { Card, CardContent, CardActions, Typography, Button, Divider } from '@mui/material';
+import { Card, CardContent, CardActions, Typography, Button, Divider, CardMedia } from '@mui/material';
 
 type Props = {
     product: Product;
@@ -12,7 +12,14 @@ export default function DetailContent({ product }: Props) {
     return (
         <div className="flex justify-center mt-10">
             <Card className="bg-purple-950 border border-blue-500 rounded-xl w-[500px] shadow-none">
-                <CardContent className="p-8">
+                <CardContent className="p-8 flex flex-col items-center">
+                    <CardMedia
+                        component="img"
+                        image={`data:image/jpeg;base64,${product.base64Image}`}
+                        alt={product.name}
+                        className="w-full h-64 object-cover mb-6 rounded"
+                    />
+
                     <Typography variant="h4" className="text-center text-gray-200 font-bold mb-4">
                         {product.name}
                     </Typography>
