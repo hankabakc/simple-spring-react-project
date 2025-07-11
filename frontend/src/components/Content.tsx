@@ -13,7 +13,7 @@ export default function Content({ products }: { products: Product[] }) {
                         key={product.id}
                         className="bg-purple-950 border border-blue-500 rounded-xl shadow-none flex flex-col items-center"
                     >
-                        <Link href={`/products/${product.id}`} className="w-full">
+                        <Link href={`/products/detail?id=${product.id}`} className="w-full">
                             <CardContent className="p-6 w-full flex flex-col items-center">
                                 <CardMedia
                                     component="img"
