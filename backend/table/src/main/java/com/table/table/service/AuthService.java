@@ -54,8 +54,7 @@ public class AuthService {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
         }
-
-        return jwtUtil.generateToken(user.getId(), user.getUsername(), user.getRole().getName());
+        return jwtUtil.generateToken(user.getId(), user.getUsername(), user.getRole().getName(), user.getEmail());
     }
 
 }

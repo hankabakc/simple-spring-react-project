@@ -17,7 +17,9 @@ public class JwtUtil {
 
     private final Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
 
-    public String generateToken(Long userId, String username, String role) {
+    public String generateToken(Long userId, String username, String role, String email) { // Email parametresi hala var
+                                                                                           // ama claim'e username
+                                                                                           // gidiyor
         return Jwts.builder()
                 .setSubject(String.valueOf(userId))
                 .claim("username", username)
@@ -26,7 +28,6 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-
     }
 
     public Claims parseClaims(String token) {
@@ -36,5 +37,4 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
     }
-
 }
