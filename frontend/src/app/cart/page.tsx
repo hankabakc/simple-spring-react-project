@@ -47,7 +47,6 @@ export default function CartPage() {
         fetchCart();
     }, []);
 
-    // Ürün sil
     const removeItem = (productId: number) => {
         axios
             .delete(`http://localhost:3000/cart/item?userId=2&productId=${productId}`)
@@ -55,7 +54,6 @@ export default function CartPage() {
             .catch(() => setError('Ürün silinirken hata oluştu.'));
     };
 
-    // Sepeti temizle
     const clearCart = () => {
         axios
             .delete(`http://localhost:3000/cart?userId=2`)
@@ -63,7 +61,6 @@ export default function CartPage() {
             .catch(() => setError('Sepet temizlenirken hata oluştu.'));
     };
 
-    // Kullanıcı yok kontrolü (hardcoded userId olduğu için gerek yok ama isteğe bağlı)
     if (!userId) {
         return (
             <Box className="flex justify-center items-center min-h-[50vh]">

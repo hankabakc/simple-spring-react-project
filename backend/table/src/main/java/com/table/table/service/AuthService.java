@@ -1,7 +1,9 @@
 package com.table.table.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.table.table.model.Role;
 import com.table.table.model.User;
@@ -27,11 +29,10 @@ public class AuthService {
     public User registerUser(String username, String password, String email) {
 
         if (userRepository.findByEmail(email).isPresent()) {
-            throw new RuntimeException("There is same email already registered");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already registered");
         }
-
         if (userRepository.findByUsername(username).isPresent()) {
-            throw new RuntimeException("There is same username already registered");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already registered");
         }
 
         Role userRole = roleRepository.findByName("user")
@@ -48,10 +49,10 @@ public class AuthService {
 
     public String loginUser(String username, String password) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("No username matched" + username));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Username not found"));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Password does not match!");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
         }
 
         return jwtUtil.generateToken(user.getId(), user.getUsername(), user.getRole().getName());

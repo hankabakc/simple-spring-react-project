@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.table.table.dto.request.CartItemRequest;
 import com.table.table.dto.response.CartItemResponse;
+import com.table.table.security.UserDetailsImpl;
 import com.table.table.service.CartItemService;
 
 @RestController
@@ -27,24 +30,31 @@ public class CartItemController {
         this.cartItemService = cartItemService;
     }
 
+    private Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        return userDetails.getId();
+    }
+
     @PostMapping
     public ResponseEntity<Map<String, Boolean>> addToCart(@RequestBody CartItemRequest request) {
-        cartItemService.addToCart(request);
+        Long userId = getCurrentUserId(); // TOKEN'dan alıyoruz
+        cartItemService.addToCart(userId, request.getProductId(), request.getQuantity());
         Map<String, Boolean> response = new HashMap<>();
         response.put("result", true);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<CartItemResponse>> getUserCart(@RequestParam Long userId) {
+    public ResponseEntity<List<CartItemResponse>> getUserCart() {
+        Long userId = getCurrentUserId();
         List<CartItemResponse> cart = cartItemService.getUserCart(userId);
         return ResponseEntity.ok(cart);
     }
 
     @DeleteMapping("/item")
-    public ResponseEntity<Map<String, Boolean>> removeFromCart(
-            @RequestParam Long userId,
-            @RequestParam Long productId) {
+    public ResponseEntity<Map<String, Boolean>> removeFromCart(@RequestParam Long productId) {
+        Long userId = getCurrentUserId();
         cartItemService.deleteFromCart(userId, productId);
         Map<String, Boolean> response = new HashMap<>();
         response.put("result", true);
@@ -52,7 +62,8 @@ public class CartItemController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Map<String, Boolean>> clearCart(@RequestParam Long userId) {
+    public ResponseEntity<Map<String, Boolean>> clearCart() {
+        Long userId = getCurrentUserId();
         cartItemService.clearCart(userId);
         Map<String, Boolean> response = new HashMap<>();
         response.put("result", true);
