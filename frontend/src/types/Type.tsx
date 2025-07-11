@@ -24,9 +24,12 @@ export type User = {
     token: string;
 };
 
+// CartItem tanımını backend'den gelen CartItemResponse ile eşleştirin
 export type CartItem = {
     productId: number;
     productName: string;
+    productImage: string; // Resim eklendi
+    productPrice: number; // Fiyat eklendi
     quantity: number;
 };
 

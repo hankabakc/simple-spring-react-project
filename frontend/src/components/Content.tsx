@@ -1,13 +1,12 @@
 'use client';
-
+import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/hooks/useCart";
 import { Product } from "@/types/Type";
 import { Card, CardContent, CardActions, Typography, Button, Divider, CardMedia } from "@mui/material";
 import Link from "next/link";
-import { useState } from "react";
 import LoginRequiredModal from "./LoginRequeiredModal";
-
+import axios from 'axios'; // Axios'u import ettiğinizden emin olun
 
 export default function Content({ products }: { products: Product[] }) {
     const [showLoginModal, setShowLoginModal] = useState(false);
@@ -22,11 +21,11 @@ export default function Content({ products }: { products: Product[] }) {
         try {
             await addToCart(productId, 1);
             alert("Product added to cart!");
-        } catch {
-            alert("Failed to add product to cart.");
+        } catch (error: any) { // Hata objesini yakalayın
+            console.error("Sepete ürün eklenirken hata oluştu:", error.response?.data || error.message || error);
+            alert("Sepete ürün eklenirken hata oluştu. Detaylar için konsola bakın.");
         }
     };
-
 
     return (
         <div className="p-5">

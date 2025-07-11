@@ -15,6 +15,8 @@ import {
     Divider,
     Stack
 } from '@mui/material';
+import { useAuth } from '@/context/AuthContext'; // useAuth'ı import edin
+import { useCart } from '@/hooks/useCart'; // useCart'ı import edin
 
 type CartItemResponse = {
     productId: number;
@@ -25,8 +27,8 @@ type CartItemResponse = {
 };
 
 export default function CartPage() {
-    // Sabit userId
-    const userId = 2;
+    const { user } = useAuth(); // Kullanıcı bilgisini useAuth'tan alın
+    const { getCart, addToCart, deleteFromCart, clearCart: clearCartHook } = useCart(user?.token || ''); // useCart hook'unu kullanın
 
     // State
     const [cartItems, setCartItems] = useState<CartItemResponse[]>([]);
@@ -34,37 +36,55 @@ export default function CartPage() {
     const [error, setError] = useState<string | null>(null);
 
     // Sepeti çek
-    const fetchCart = () => {
+    const fetchCart = async () => {
+        if (!user?.token) {
+            setError('Sepeti görüntülemek için giriş yapmalısınız.');
+            setLoading(false);
+            return;
+        }
         setLoading(true);
-        axios
-            .get(`http://localhost:3000/cart?userId=2`)
-            .then(res => setCartItems(res.data.items ?? []))
-            .catch(() => setError('Sepet yüklenemedi. Lütfen daha sonra tekrar deneyin.'))
-            .finally(() => setLoading(false));
+        setError(null); // Önceki hataları temizle
+        try {
+            const data = await getCart(); // useCart hook'undan getCart'ı kullan
+            setCartItems(data);
+        } catch (err: any) {
+            console.error('Sepet yüklenirken hata oluştu:', err.response?.data || err.message || err);
+            setError('Sepet yüklenemedi. Lütfen daha sonra tekrar deneyin.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
         fetchCart();
-    }, []);
+    }, [user?.token]); // user.token değiştiğinde sepeti tekrar çek
 
-    const removeItem = (productId: number) => {
-        axios
-            .delete(`http://localhost:3000/cart/item?userId=2&productId=${productId}`)
-            .then(() => fetchCart())
-            .catch(() => setError('Ürün silinirken hata oluştu.'));
+    const removeItem = async (productId: number) => {
+        if (!user?.token) return;
+        try {
+            await deleteFromCart(productId); // useCart hook'undan deleteFromCart'ı kullan
+            fetchCart(); // Sepeti yeniden çek
+        } catch (err: any) {
+            console.error('Ürün silinirken hata oluştu:', err.response?.data || err.message || err);
+            setError('Ürün silinirken hata oluştu.');
+        }
     };
 
-    const clearCart = () => {
-        axios
-            .delete(`http://localhost:3000/cart?userId=2`)
-            .then(() => fetchCart())
-            .catch(() => setError('Sepet temizlenirken hata oluştu.'));
+    const clearCart = async () => {
+        if (!user?.token) return;
+        try {
+            await clearCartHook(); // useCart hook'undan clearCart'ı kullan
+            fetchCart(); // Sepeti yeniden çek
+        } catch (err: any) {
+            console.error('Sepet temizlenirken hata oluştu:', err.response?.data || err.message || err);
+            setError('Sepet temizlenirken hata oluştu.');
+        }
     };
 
-    if (!userId) {
+    if (!user) { // userId yerine user objesini kontrol edin
         return (
             <Box className="flex justify-center items-center min-h-[50vh]">
-                <Alert severity="error">❗ Kullanıcı girişi gerekiyor. userId yok.</Alert>
+                <Alert severity="error">❗ Sepeti görüntülemek için kullanıcı girişi gerekiyor.</Alert>
             </Box>
         );
     }
@@ -100,7 +120,7 @@ export default function CartPage() {
                 <Stack spacing={2}>
                     <Grid container spacing={2}>
                         {cartItems.map((item) => (
-                            <Grid key={item.productId}>
+                            <Grid key={item.productId}> {/* Responsive grid ayarları */}
                                 <Card className="shadow-lg rounded-lg bg-purple-950 border border-blue-500">
                                     <CardMedia
                                         component="img"
