@@ -1,10 +1,33 @@
 'use client';
 
+import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/hooks/useCart";
 import { Product } from "@/types/Type";
 import { Card, CardContent, CardActions, Typography, Button, Divider, CardMedia } from "@mui/material";
 import Link from "next/link";
+import { useState } from "react";
+import LoginRequiredModal from "./LoginRequeiredModal";
+
 
 export default function Content({ products }: { products: Product[] }) {
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const { user } = useAuth();
+    const { addToCart } = useCart(user?.token || '');
+
+    const handleAddToCart = async (productId: number) => {
+        if (!user) {
+            setShowLoginModal(true);
+            return;
+        }
+        try {
+            await addToCart(productId, 1);
+            alert("Product added to cart!");
+        } catch {
+            alert("Failed to add product to cart.");
+        }
+    };
+
+
     return (
         <div className="p-5">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -40,6 +63,7 @@ export default function Content({ products }: { products: Product[] }) {
                             <Button
                                 variant="contained"
                                 className="bg-blue-600 hover:bg-blue-700 text-white"
+                                onClick={() => handleAddToCart(product.id)}
                             >
                                 Sepete Ekle
                             </Button>
@@ -47,6 +71,7 @@ export default function Content({ products }: { products: Product[] }) {
                     </Card>
                 ))}
             </div>
+            <LoginRequiredModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
         </div>
     );
 }

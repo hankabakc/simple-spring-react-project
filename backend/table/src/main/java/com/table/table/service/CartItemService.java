@@ -3,10 +3,11 @@ package com.table.table.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
-import com.table.table.dto.request.CartItemRequest;
 import com.table.table.dto.response.CartItemResponse;
 import com.table.table.model.CartItem;
 import com.table.table.model.Product;
@@ -41,21 +42,21 @@ public class CartItemService {
     }
 
     @Transactional
-    public void addToCart(CartItemRequest request) {
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+    public void addToCart(Long userId, Long productId, Integer quantity) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
 
-        CartItem existing = cartItemRepository.findByUserIdAndProductId(request.getUserId(), request.getProductId());
+        CartItem existing = cartItemRepository.findByUserIdAndProductId(userId, productId);
         if (existing != null) {
-            existing.setQuantity(existing.getQuantity() + request.getQuantity());
+            existing.setQuantity(existing.getQuantity() + quantity);
             cartItemRepository.save(existing);
         } else {
             CartItem item = new CartItem();
             item.setUser(user);
             item.setProduct(product);
-            item.setQuantity(request.getQuantity());
+            item.setQuantity(quantity);
             cartItemRepository.save(item);
         }
     }

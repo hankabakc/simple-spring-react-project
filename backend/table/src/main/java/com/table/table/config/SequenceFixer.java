@@ -31,8 +31,10 @@ public class SequenceFixer {
 
     private void fixSequence(String tableName, String sequenceName) {
         String sql = String.format(
-                "SELECT setval('users_id_seq', (SELECT COALESCE(MAX(id), 1) FROM users) + 1, false);",
-                sequenceName, tableName);
+                "SELECT setval('%s', (SELECT COALESCE(MAX(id), 0) FROM %s) + 1, false);",
+                sequenceName,
+                tableName);
+        System.out.println("Running: " + sql);
         jdbcTemplate.execute(sql);
     }
 }

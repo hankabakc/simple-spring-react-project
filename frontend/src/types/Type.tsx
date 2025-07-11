@@ -23,3 +23,14 @@ export type User = {
     username: string;
     token: string;
 };
+
+export type CartItem = {
+    productId: number;
+    productName: string;
+    quantity: number;
+};
+
+export type NavbarProps = {
+    onSearchChange: (value: string) => void;
+    search: string;
+};

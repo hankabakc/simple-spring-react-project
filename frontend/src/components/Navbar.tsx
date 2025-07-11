@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import {
     AppBar,
     Toolbar,
@@ -8,52 +7,128 @@ import {
     Button,
     ButtonGroup,
     Box,
+    Typography,
+    Divider,
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Link from 'next/link';
+import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/hooks/useCart";
+import { useState } from 'react';
+import { CartItem } from '@/types/Type';
+import { useRouter } from 'next/navigation';
+import LoginRequiredModal from "@/components/LoginRequeiredModal";
 
-export default function Navbar() {
-    const [search, setSearch] = useState('');
+type NavbarProps = {
+    search: string;
+    onSearchChange: (value: string) => void;
+};
 
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearch(event.target.value);
+export default function Navbar({ search, onSearchChange }: NavbarProps) {
+    const { user, logout } = useAuth();
+    const { getCart } = useCart(user?.token || '');
+    const [showCart, setShowCart] = useState(false);
+    const [cartItems, setCartItems] = useState<CartItem[]>([]);
+    const [loadingCart, setLoadingCart] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const router = useRouter();
+
+    const handleCartClick = async () => {
+        if (!user) {
+            setShowLoginModal(true);
+            return;
+        }
+
+        setLoadingCart(true);
+        try {
+            const data = await getCart();
+            setCartItems(data);
+            setShowCart(!showCart);
+        } catch (err) {
+            console.error('Cart fetch error', err);
+        } finally {
+            setLoadingCart(false);
+        }
+    };
+
+    const handleUserClick = () => {
+        if (user) {
+            logout();
+            router.push('/products');
+        } else {
+            router.push('/auth/login');
+        }
     };
 
     return (
-        <AppBar
-            position="static"
-            className="bg-purple-950 border-b border-b-blue-500 shadow-none"
-        >
-            <Toolbar className="flex justify-between items-center px-5 h-20">
-                <Box className="flex items-center">
-                    <TextField
-                        label="Search"
-                        variant="outlined"
-                        size="small"
-                        value={search}
-                        onChange={handleSearchChange}
-                        color="secondary"
-                        className="bg-white rounded"
-                    />
-                </Box>
-                <ButtonGroup variant="text" className="space-x-2">
-                    <Button
-                        startIcon={<PersonIcon />}
-                        className="text-gray-200 hover:bg-purple-800/30"
-                    >
-                        Kullanıcı
-                    </Button>
-                    <Link href={`/cart?userId=1`}>
+        <>
+            <AppBar
+                position="static"
+                className="bg-purple-950 border-b border-b-blue-500 shadow-none"
+            >
+                <Toolbar className="flex justify-between items-center px-5 h-20">
+                    <Box className="flex items-center">
+                        <TextField
+                            label="Search"
+                            variant="outlined"
+                            size="small"
+                            value={search}
+                            onChange={(e) => onSearchChange(e.target.value)}
+                            color="secondary"
+                            className="bg-white rounded"
+                        />
+                    </Box>
+                    <ButtonGroup variant="text" className="space-x-2">
+                        <Button
+                            startIcon={<PersonIcon />}
+                            onClick={handleUserClick}
+                            className="text-gray-200 hover:bg-purple-800/30"
+                        >
+                            {user ? 'Logout' : 'Login'}
+                        </Button>
                         <Button
                             startIcon={<ShoppingCartIcon />}
                             className="text-gray-200 hover:bg-purple-800/30"
+                            onClick={handleCartClick}
                         >
                             Sepet
                         </Button>
+                    </ButtonGroup>
+                </Toolbar>
+            </AppBar>
+
+            {showCart && (
+                <Box className="absolute top-20 right-5 bg-white rounded shadow-lg w-64 p-4 z-50">
+                    <Typography variant="h6">My Cart</Typography>
+                    <Divider className="my-2" />
+
+                    {loadingCart ? (
+                        <Typography>Loading...</Typography>
+                    ) : cartItems.length === 0 ? (
+                        <Typography>No items in cart</Typography>
+                    ) : (
+                        cartItems.map((item) => (
+                            <Box key={item.productId} className="flex justify-between my-2">
+                                <Typography>{item.productName}</Typography>
+                                <Typography>x{item.quantity}</Typography>
+                            </Box>
+                        ))
+                    )}
+
+                    <Divider className="my-2" />
+                    <Link href="/cart">
+                        <Button variant="contained" fullWidth color="primary">
+                            Go to Cart
+                        </Button>
                     </Link>
-                </ButtonGroup>
-            </Toolbar>
-        </AppBar>
+                </Box>
+            )}
+
+            <LoginRequiredModal
+                open={showLoginModal}
+                onClose={() => setShowLoginModal(false)}
+            />
+        </>
     );
 }

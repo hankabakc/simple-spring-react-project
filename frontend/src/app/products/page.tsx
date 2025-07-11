@@ -9,6 +9,7 @@ import { Product } from '@/types/Type';
 export default function ProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    const [search, setSearch] = useState('');
 
     useEffect(() => {
         axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products`)
@@ -26,12 +27,16 @@ export default function ProductsPage() {
         console.log('Products:', products);
     }, [products]);
 
-    // ✔️ Filtrelenmiş liste
-    const filteredProducts = selectedCategories.length
-        ? products.filter((product) =>
-            selectedCategories.includes(product.categoryName)
-        )
-        : products;
+    const filteredProducts = products.filter((product) => {
+        const matchesCategory =
+            selectedCategories.length === 0 ||
+            selectedCategories.includes(product.categoryName);
+
+        const matchesSearch =
+            product.name.toLowerCase().includes(search.toLowerCase());
+
+        return matchesCategory && matchesSearch;
+    });
 
     useEffect(() => {
         console.log(selectedCategories)
@@ -49,7 +54,7 @@ export default function ProductsPage() {
         <div className="flex">
             <Sidebar selected={selectedCategories} onChange={handleCategoryChange} />
             <div className="flex-1 min-h-screen bg-gray-100">
-                <Navbar />
+                <Navbar search={search} onSearchChange={setSearch} />
                 <Content products={filteredProducts} />
             </div>
         </div>
