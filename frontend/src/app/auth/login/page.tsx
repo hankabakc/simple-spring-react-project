@@ -5,18 +5,7 @@ import axios from 'axios';
 import { Box, TextField, Button, Typography, Alert, CircularProgress, Paper, Stack } from '@mui/material';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-
-function parseJwt(token: string): { id: number; username: string } {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-        atob(base64)
-            .split('')
-            .map((c) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
-            .join('')
-    );
-    return JSON.parse(jsonPayload);
-}
+import { parseJwt } from '@/utils/auth';
 
 export default function LoginPage() {
     const { setUser } = useAuth();
@@ -79,7 +68,6 @@ export default function LoginPage() {
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
-
                         <Button
                             type="submit"
                             variant="contained"

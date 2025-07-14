@@ -1,17 +1,21 @@
+// src/components/Content.tsx
+
 'use client';
 import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/hooks/useCart";
 import { Product } from "@/types/Type";
-import { Card, CardContent, CardActions, Typography, Button, Divider, CardMedia } from "@mui/material";
+import { CardContent, CardActions, Typography, Button, Divider, CardMedia } from "@mui/material";
 import Link from "next/link";
 import LoginRequiredModal from "./LoginRequeiredModal";
-import axios from 'axios';
+import StyledCard from './common/StyledCard';
+import { useCartContext } from "@/context/CartContext";
 
 export default function Content({ products }: { products: Product[] }) {
     const [showLoginModal, setShowLoginModal] = useState(false);
     const { user } = useAuth();
     const { addToCart } = useCart(user?.token || '');
+    const { addToCartAndRefresh } = useCartContext();
 
     const handleAddToCart = async (productId: number) => {
         if (!user) {
@@ -19,11 +23,10 @@ export default function Content({ products }: { products: Product[] }) {
             return;
         }
         try {
-            await addToCart(productId, 1);
-            alert("Product added to cart!");
-        } catch (error: any) {
-            console.error("Sepete ürün eklenirken hata oluştu:", error.response?.data || error.message || error);
-            alert("Sepete ürün eklenirken hata oluştu. Detaylar için konsola bakın.");
+            await addToCartAndRefresh(productId, 1);
+            alert("Ürün sepete eklendi!");
+        } catch (error) {
+            console.error(error);
         }
     };
 
@@ -31,9 +34,8 @@ export default function Content({ products }: { products: Product[] }) {
         <div className="p-5">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {products.map((product) => (
-                    <Card
+                    <StyledCard
                         key={product.id}
-                        className="card-primary flex flex-col items-center"
                     >
                         <Link href={`/products/detail?id=${product.id}`} className="w-full">
                             <CardContent className="p-default w-full flex flex-col items-center">
@@ -43,13 +45,10 @@ export default function Content({ products }: { products: Product[] }) {
                                     alt={product.name}
                                     className="w-full h-48 object-cover mb-default rounded"
                                 />
-
                                 <Typography variant="h6" className="text-primary text-bold mb-default text-centered">
                                     {product.name}
                                 </Typography>
-
                                 <Divider className="divider-primary w-full mb-default" />
-
                                 <Typography variant="body2" className="text-secondary text-centered mb-default">
                                     {product.explanation}
                                 </Typography>
@@ -67,7 +66,7 @@ export default function Content({ products }: { products: Product[] }) {
                                 Sepete Ekle
                             </Button>
                         </CardActions>
-                    </Card>
+                    </StyledCard>
                 ))}
             </div>
             <LoginRequiredModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />

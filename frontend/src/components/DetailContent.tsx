@@ -1,17 +1,37 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Product } from '@/types/Type';
-import { Card, CardContent, CardActions, Typography, Button, Divider, CardMedia } from '@mui/material';
+import { CardContent, CardActions, Typography, Button, Divider, CardMedia } from '@mui/material';
+import { DetailContentProps } from '@/types/Type';
+import StyledCard from './common/StyledCard';
+import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/hooks/useCart';
+import LoginRequiredModal from './LoginRequeiredModal';
+import { useCartContext } from '@/context/CartContext';
 
-type Props = {
-    product: Product;
-};
+export default function DetailContent({ product }: DetailContentProps) {
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const { user } = useAuth();
+    const { addToCartAndRefresh } = useCartContext();
 
-export default function DetailContent({ product }: Props) {
+    const handleAddToCart = async () => {
+        if (!user) {
+            setShowLoginModal(true);
+            return;
+        }
+        try {
+            await addToCartAndRefresh(product.id, 1);
+            alert('Ürün sepete eklendi!');
+        } catch (error: any) {
+            console.error('Sepete ürün eklenirken hata oluştu:', error.response?.data || error.message || error);
+            alert('Sepete ürün eklenirken hata oluştu. Detaylar için konsola bakın.');
+        }
+    };
+
     return (
         <div className="flex justify-center mt-10">
-            <Card className="card-primary w-[500px]">
+            <StyledCard>
                 <CardContent className="p-8 flex flex-col items-center">
                     <CardMedia
                         component="img"
@@ -19,7 +39,6 @@ export default function DetailContent({ product }: Props) {
                         alt={product.name}
                         className="w-full h-64 object-cover mb-default rounded"
                     />
-
                     <Typography variant="h4" className="text-centered text-primary text-bold mb-default">
                         {product.name}
                     </Typography>
@@ -35,11 +54,13 @@ export default function DetailContent({ product }: Props) {
                     <Button
                         variant="contained"
                         className="btn-primary"
+                        onClick={handleAddToCart}
                     >
                         Sepete Ekle
                     </Button>
                 </CardActions>
-            </Card>
+            </StyledCard>
+            <LoginRequiredModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
         </div>
     );
 }

@@ -28,11 +28,12 @@ public class AuthService {
 
     public User registerUser(String username, String password, String email) {
 
-        if (userRepository.findByEmail(email).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already registered");
+        if (userRepository.existsByUsername(username)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username is already taken");
         }
-        if (userRepository.findByUsername(username).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already registered");
+
+        if (userRepository.existsByEmail(email)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email is already taken");
         }
 
         Role userRole = roleRepository.findByName("user")
