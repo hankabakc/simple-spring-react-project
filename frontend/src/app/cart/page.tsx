@@ -1,75 +1,64 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '@/context/AuthContext'; // Assuming this path is correct
-import { useCart } from '@/hooks/useCart'; // Assuming this path is correct
-import { CartItem } from '@/types/Type'; // Assuming this path is correct
+import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/hooks/useCart';
+import { CartItem } from '@/types/Type';
 import {
     Box,
     Typography,
     Button,
     Paper,
     List,
-    ListItem,
-    ListItemText,
-    IconButton,
     Divider,
     Dialog,
     DialogTitle,
     DialogContent,
     DialogActions
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import LoginRequiredModal from '@/components/LoginRequeiredModal'; // Assuming this path is correct
+import LoginRequiredModal from '@/components/LoginRequeiredModal';
 import { useRouter } from 'next/navigation';
+import CartItemRow from '@/components/CartItemRow';
 
-// Custom Message Box Component to replace alert()
-interface MessageBoxProps {
+// Custom Message Box Component
+const MessageBox = ({ open, title, message, onClose }: {
     open: boolean;
     title: string;
     message: string;
     onClose: () => void;
-}
-
-const MessageBox: React.FC<MessageBoxProps> = ({ open, title, message, onClose }) => {
-    return (
-        <Dialog open={open} onClose={onClose} aria-labelledby="message-box-title">
-            <DialogTitle id="message-box-title">{title}</DialogTitle>
-            <DialogContent>
-                <Typography>{message}</Typography>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={onClose} color="primary" autoFocus>
-                    Tamam
-                </Button>
-            </DialogActions>
-        </Dialog>
-    );
-};
+}) => (
+    <Dialog open={open} onClose={onClose}>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogContent>
+            <Typography>{message}</Typography>
+        </DialogContent>
+        <DialogActions>
+            <Button onClick={onClose} color="primary" autoFocus>
+                OK
+            </Button>
+        </DialogActions>
+    </Dialog>
+);
 
 export default function CartPage() {
     const { user } = useAuth();
     const router = useRouter();
-    // Initialize useCart with a default empty string if user?.token is undefined
-    const { getCart, deleteFromCart, clearCart } = useCart(user?.token || '');
+    const { getCart, addToCart, deleteFromCart, clearCart } = useCart(user?.token || '');
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showLoginModal, setShowLoginModal] = useState(false);
 
-    // State for custom message box
     const [messageBoxOpen, setMessageBoxOpen] = useState(false);
     const [messageBoxTitle, setMessageBoxTitle] = useState('');
     const [messageBoxContent, setMessageBoxContent] = useState('');
 
-    // Function to show custom message box
     const showMessage = (title: string, message: string) => {
         setMessageBoxTitle(title);
         setMessageBoxContent(message);
         setMessageBoxOpen(true);
     };
 
-    // Effect to fetch cart items when user changes or component mounts
     useEffect(() => {
         if (!user) {
             setShowLoginModal(true);
@@ -77,23 +66,41 @@ export default function CartPage() {
             return;
         }
         fetchCartItems();
-    }, [user]); // Dependency on user to refetch when auth state changes
+    }, [user]);
 
-    // Function to fetch cart items from the API
     const fetchCartItems = async () => {
         setLoading(true);
         try {
             const data = await getCart();
             setCartItems(data);
         } catch (err) {
-            console.error("Sepet öğeleri çekilirken hata oluştu:", err);
-            setError("Sepet öğeleri yüklenemedi.");
+            console.error("Error fetching cart:", err);
+            setError("Could not load cart items.");
         } finally {
             setLoading(false);
         }
     };
 
-    // Handler for removing an item from the cart
+    // ✅ NEW: Quantity change handler
+    const handleChangeQuantity = async (item: CartItem, delta: number) => {
+        if (!user) {
+            setShowLoginModal(true);
+            return;
+        }
+        const newQuantity = item.quantity + delta;
+        try {
+            if (newQuantity <= 0) {
+                await deleteFromCart(item.productId);
+            } else {
+                await addToCart(item.productId, newQuantity);
+            }
+            fetchCartItems();
+        } catch (error) {
+            console.error("Quantity change error:", error);
+            showMessage("Error", "Could not update quantity.");
+        }
+    };
+
     const handleRemoveFromCart = async (productId: number) => {
         if (!user) {
             setShowLoginModal(true);
@@ -101,15 +108,14 @@ export default function CartPage() {
         }
         try {
             await deleteFromCart(productId);
-            fetchCartItems(); // Re-fetch cart items to update the UI
-            showMessage("Başarılı", "Ürün sepetten kaldırıldı!");
-        } catch (error: any) {
-            console.error("Ürün sepetten kaldırılırken hata oluştu:", error.response?.data || error.message || error);
-            showMessage("Hata", "Ürün sepetten kaldırılırken hata oluştu.");
+            fetchCartItems();
+            showMessage("Success", "Item removed from cart.");
+        } catch (error) {
+            console.error("Remove error:", error);
+            showMessage("Error", "Could not remove item.");
         }
     };
 
-    // Handler for clearing the entire cart
     const handleClearCart = async () => {
         if (!user) {
             setShowLoginModal(true);
@@ -117,91 +123,70 @@ export default function CartPage() {
         }
         try {
             await clearCart();
-            fetchCartItems(); // Re-fetch cart items to update the UI
-            showMessage("Başarılı", "Sepet temizlendi!");
-        } catch (error: any) {
-            console.error("Sepet temizlenirken hata oluştu:", error.response?.data || error.message || error);
-            showMessage("Hata", "Sepet temizlenirken hata oluştu.");
+            fetchCartItems();
+            showMessage("Success", "Cart cleared!");
+        } catch (error) {
+            console.error("Clear error:", error);
+            showMessage("Error", "Could not clear cart.");
         }
     };
 
-    // Calculates the total price of items in the cart
     const calculateTotalPrice = () => {
         return cartItems.reduce((total, item) => total + (item.productPrice * item.quantity), 0).toFixed(2);
     };
 
-    // Display loading state
     if (loading) {
-        return <div className="text-center mt-10">Sepet yükleniyor...</div>;
+        return <div className="text-center mt-10">Loading cart...</div>;
     }
 
-    // Display error state
     if (error) {
         return <div className="text-center mt-10 text-red-500">{error}</div>;
     }
 
     return (
-        <Box className="min-h-screen bg-gray-50 p-6 font-inter"> {/* Added font-inter class */}
-            <Paper elevation={3} className="p-8 max-w-2xl mx-auto rounded-xl shadow-lg"> {/* Increased padding and added shadow */}
-                <Typography variant="h4" className="mb-6 text-center font-bold text-blue-700"> {/* Adjusted margin, font weight, and color */}
-                    Sepetiniz
+        <Box className="min-h-screen bg-gray-50 p-6 font-inter">
+            <Paper elevation={3} className="p-8 max-w-2xl mx-auto rounded-xl shadow-lg">
+                <Typography variant="h4" className="mb-6 text-center font-bold text-blue-700">
+                    Your Cart
                 </Typography>
-                <Divider className="mb-6 bg-blue-200" /> {/* Adjusted margin and color */}
+                <Divider className="mb-6 bg-blue-200" />
                 {cartItems.length === 0 ? (
                     <Typography variant="h6" className="text-center text-gray-600">
-                        Sepetiniz boş.
+                        Your cart is empty.
                     </Typography>
                 ) : (
                     <>
                         <List>
                             {cartItems.map((item) => (
-                                <React.Fragment key={item.productId}>
-                                    <ListItem className="py-4 flex items-center justify-between"> {/* Use flexbox for alignment */}
-                                        <div className="flex items-center">
-                                            <img
-                                                src={`data:image/jpeg;base64,${item.productImage}`}
-                                                alt={item.productName}
-                                                className="w-24 h-24 object-cover rounded-lg mr-4 shadow-md" // Increased size, rounded corners, and shadow
-                                            />
-                                            <ListItemText
-                                                primary={<Typography variant="h6" className="text-gray-800 font-semibold">{item.productName}</Typography>}
-                                                secondary={
-                                                    <>
-                                                        <Typography variant="body2" className="text-gray-600">Adet: {item.quantity}</Typography>
-                                                        <Typography variant="subtitle1" className="text-green-700 font-bold mt-1">${item.productPrice.toFixed(2)}</Typography> {/* Changed color and font weight */}
-                                                    </>
-                                                }
-                                            />
-                                        </div>
-                                        {/* IconButton directly inside ListItem */}
-                                        <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveFromCart(item.productId)}>
-                                            <DeleteIcon color="error" />
-                                        </IconButton>
-                                    </ListItem>
-                                    <Divider component="li" className="bg-gray-200" /> {/* Added color to divider */}
-                                </React.Fragment>
+                                <CartItemRow
+                                    key={item.productId}
+                                    item={item}
+                                    onIncrease={() => handleChangeQuantity(item, +1)}
+                                    onDecrease={() => handleChangeQuantity(item, -1)}
+                                    onDelete={() => handleRemoveFromCart(item.productId)}
+                                />
                             ))}
                         </List>
-                        <Box className="mt-8 p-6 bg-blue-50 rounded-lg shadow-inner"> {/* Increased padding, changed background, added shadow */}
-                            <Typography variant="h5" className="text-right text-blue-800 font-bold"> {/* Adjusted color and font weight */}
-                                Toplam: ${calculateTotalPrice()}
+                        <Box className="mt-8 p-6 bg-blue-50 rounded-lg shadow-inner">
+                            <Typography variant="h5" className="text-right text-blue-800 font-bold">
+                                Total: ${calculateTotalPrice()}
                             </Typography>
-                            <Box className="flex justify-end mt-6 space-x-4"> {/* Adjusted margin */}
+                            <Box className="flex justify-end mt-6 space-x-4">
                                 <Button
                                     variant="outlined"
                                     color="error"
                                     onClick={handleClearCart}
-                                    className="px-6 py-3 rounded-lg border-2 border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600 transition duration-300 ease-in-out" // Custom Tailwind styles
+                                    className="px-6 py-3 rounded-lg border-2 border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600 transition duration-300 ease-in-out"
                                 >
-                                    Sepeti Temizle
+                                    Clear Cart
                                 </Button>
                                 <Button
                                     variant="contained"
                                     color="primary"
-                                    className="px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition duration-300 ease-in-out shadow-md" // Custom Tailwind styles
-                                    onClick={() => showMessage("Ödeme", "Ödeme sayfasına yönlendiriliyor...")}
+                                    className="px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition duration-300 ease-in-out shadow-md"
+                                    onClick={() => showMessage("Payment", "Redirecting to payment page...")}
                                 >
-                                    Ödeme Yap
+                                    Checkout
                                 </Button>
                             </Box>
                         </Box>
@@ -215,7 +200,6 @@ export default function CartPage() {
                     router.push('/login');
                 }}
             />
-            {/* Custom Message Box Component */}
             <MessageBox
                 open={messageBoxOpen}
                 title={messageBoxTitle}
