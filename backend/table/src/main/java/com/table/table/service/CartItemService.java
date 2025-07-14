@@ -83,4 +83,29 @@ public class CartItemService {
         cartItemRepository.deleteAll(items);
     }
 
+    @Transactional
+    public void setQuantityForUser(Long userId, Long productId, Integer newQuantity) {
+        if (newQuantity <= 0) {
+            deleteFromCart(userId, productId);
+            return;
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+
+        CartItem existing = cartItemRepository.findByUserIdAndProductId(userId, productId);
+        if (existing != null) {
+            existing.setQuantity(newQuantity);
+            cartItemRepository.save(existing);
+        } else {
+            CartItem item = new CartItem();
+            item.setUser(user);
+            item.setProduct(product);
+            item.setQuantity(newQuantity);
+            cartItemRepository.save(item);
+        }
+    }
+
 }

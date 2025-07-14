@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -75,6 +76,15 @@ public class CartItemController {
     public ResponseEntity<Map<String, Boolean>> clearCart() {
         Long userId = getCurrentUserId();
         cartItemService.clearCart(userId);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("result", true);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping
+    public ResponseEntity<Map<String, Boolean>> setCartQuantity(@RequestBody CartItemRequest request) {
+        Long userId = getCurrentUserId();
+        cartItemService.setQuantityForUser(userId, request.getProductId(), request.getQuantity());
         Map<String, Boolean> response = new HashMap<>();
         response.put("result", true);
         return ResponseEntity.ok(response);

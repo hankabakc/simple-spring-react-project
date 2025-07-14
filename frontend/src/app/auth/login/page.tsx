@@ -45,7 +45,9 @@ export default function LoginPage() {
     return (
         <Box className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
             <Paper elevation={3} className="p-default max-w-md w-full rounded-xl">
-                <Typography variant="h5" className="mb-default text-bold text-centered">Login</Typography>
+                <Typography variant="h5" className="mb-default text-bold text-centered">
+                    Login
+                </Typography>
 
                 {error && <Alert severity="error" className="mb-default">{error}</Alert>}
 
@@ -76,6 +78,13 @@ export default function LoginPage() {
                             className="btn-primary"
                         >
                             {loading ? <CircularProgress size={24} /> : 'Login'}
+                        </Button>
+                        <Button
+                            variant="text"
+                            color="secondary"
+                            onClick={() => router.push('/auth/register')}
+                        >
+                            Don’t have an account? Register
                         </Button>
                     </Stack>
                 </form>
