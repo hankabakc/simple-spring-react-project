@@ -63,6 +63,9 @@ public class ProductService {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
 
+        // *** BU SATIRI EKLEYİN ***
+        product.setCategory(category); // <-- Kategori objesini Product'a set ediyoruz
+
         MultipartFile image = request.getImage();
         if (image != null && !image.isEmpty()) {
             try {
