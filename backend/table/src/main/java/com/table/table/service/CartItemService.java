@@ -63,7 +63,8 @@ public class CartItemService {
 
     @Transactional(readOnly = true)
     public List<CartItemResponse> getUserCart(Long userId) {
-        List<CartItem> items = cartItemRepository.findByUserId(userId);
+        List<CartItem> items = cartItemRepository.findByUserIdOrderByIdAsc(userId);
+        ;
         return items.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());

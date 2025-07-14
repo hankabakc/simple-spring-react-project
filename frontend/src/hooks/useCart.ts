@@ -1,5 +1,3 @@
-// src/hooks/useCart.ts
-
 import { useCallback } from 'react';
 import api from '@/services/api';
 
@@ -11,6 +9,10 @@ export function useCart(token: string) {
 
     const addToCart = async (productId: number, quantity: number) => {
         await api.post('/api/cart', { productId, quantity }, config);
+    };
+
+    const setCartQuantity = async (productId: number, quantity: number) => {
+        await api.put('/api/cart', { productId, quantity }, config);
     };
 
     const getCart = useCallback(async () => {
@@ -26,5 +28,5 @@ export function useCart(token: string) {
         await api.delete('/api/cart', config);
     };
 
-    return { addToCart, getCart, deleteFromCart, clearCart };
+    return { addToCart, setCartQuantity, getCart, deleteFromCart, clearCart };
 }

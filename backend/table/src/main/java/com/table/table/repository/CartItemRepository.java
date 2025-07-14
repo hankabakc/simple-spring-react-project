@@ -10,4 +10,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     List<CartItem> findByUserId(Long userId);
 
     CartItem findByUserIdAndProductId(Long userId, Long productId);
+
+    List<CartItem> findByUserIdOrderByIdAsc(Long userId);
+
 }
