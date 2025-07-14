@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, IconButton, Typography, Divider, ListItem, ListItemText } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import QuantitySelector from './QuantitiySelector';
@@ -8,15 +8,33 @@ import { CartItem } from '@/types/Type';
 
 export default function CartItemRow({
     item,
-    onIncrease,
-    onDecrease,
+    onSetQuantity,
     onDelete
 }: {
     item: CartItem;
-    onIncrease: () => void;
-    onDecrease: () => void;
+    onSetQuantity: (newQuantity: number) => void;
     onDelete: () => void;
 }) {
+    const [localQuantity, setLocalQuantity] = useState(item.quantity);
+
+    // Güncel quantity prop değişirse local state'i güncelle
+    useEffect(() => {
+        setLocalQuantity(item.quantity);
+    }, [item.quantity]);
+
+    const handleIncrease = () => {
+        const newQuantity = localQuantity + 1;
+        setLocalQuantity(newQuantity);
+        onSetQuantity(newQuantity);
+    };
+
+    const handleDecrease = () => {
+        if (localQuantity <= 1) return;
+        const newQuantity = localQuantity - 1;
+        setLocalQuantity(newQuantity);
+        onSetQuantity(newQuantity);
+    };
+
     return (
         <>
             <ListItem className="py-4 flex items-center justify-between">
@@ -33,11 +51,11 @@ export default function CartItemRow({
                             </Typography>
                         }
                         secondary={
-                            <Box>
+                            <Box className="mt-2">
                                 <QuantitySelector
-                                    quantity={item.quantity}
-                                    onIncrease={onIncrease}
-                                    onDecrease={onDecrease}
+                                    quantity={localQuantity}
+                                    onIncrease={handleIncrease}
+                                    onDecrease={handleDecrease}
                                 />
                                 <Typography variant="subtitle1" className="text-green-700 font-bold mt-2">
                                     ${item.productPrice.toFixed(2)}

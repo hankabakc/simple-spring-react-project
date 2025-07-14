@@ -43,7 +43,8 @@ const MessageBox = ({ open, title, message, onClose }: {
 export default function CartPage() {
     const { user } = useAuth();
     const router = useRouter();
-    const { getCart, addToCart, deleteFromCart, clearCart } = useCart(user?.token || '');
+    const { getCart, addToCart, setCartQuantity, deleteFromCart, clearCart } = useCart(user?.token || '');
+
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -81,7 +82,6 @@ export default function CartPage() {
         }
     };
 
-    // ✅ NEW: Quantity change handler
     const handleChangeQuantity = async (item: CartItem, delta: number) => {
         if (!user) {
             setShowLoginModal(true);
@@ -92,7 +92,8 @@ export default function CartPage() {
             if (newQuantity <= 0) {
                 await deleteFromCart(item.productId);
             } else {
-                await addToCart(item.productId, newQuantity);
+                await setCartQuantity(item.productId, newQuantity);
+
             }
             fetchCartItems();
         } catch (error) {
@@ -135,6 +136,20 @@ export default function CartPage() {
         return cartItems.reduce((total, item) => total + (item.productPrice * item.quantity), 0).toFixed(2);
     };
 
+    const handleSetQuantity = async (item: CartItem, newQuantity: number) => {
+        if (!user) {
+            setShowLoginModal(true);
+            return;
+        }
+        try {
+            await setCartQuantity(item.productId, newQuantity);
+            fetchCartItems();
+        } catch (error) {
+            console.error("Quantity change error:", error);
+            showMessage("Error", "Could not update quantity.");
+        }
+    };
+
     if (loading) {
         return <div className="text-center mt-10">Loading cart...</div>;
     }
@@ -161,8 +176,7 @@ export default function CartPage() {
                                 <CartItemRow
                                     key={item.productId}
                                     item={item}
-                                    onIncrease={() => handleChangeQuantity(item, +1)}
-                                    onDecrease={() => handleChangeQuantity(item, -1)}
+                                    onSetQuantity={(newQuantity) => handleSetQuantity(item, newQuantity)}
                                     onDelete={() => handleRemoveFromCart(item.productId)}
                                 />
                             ))}
