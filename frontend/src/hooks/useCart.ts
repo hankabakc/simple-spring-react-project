@@ -1,39 +1,29 @@
+// src/hooks/useCart.ts
+
 import { useCallback } from 'react';
-import axios from 'axios';
+import api from '@/services/api';
 
 export function useCart(token: string) {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+    const config = {
+        headers: { Authorization: `Bearer ${token}` }
+    };
 
     const addToCart = async (productId: number, quantity: number) => {
-        await axios.post(
-            `${backendUrl}/api/cart`,
-            { productId, quantity },
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await api.post('/api/cart', { productId, quantity }, config);
     };
 
     const getCart = useCallback(async () => {
-        const res = await axios.get(
-            `${backendUrl}/api/cart`,
-            {
-                headers: { Authorization: `Bearer ${token}` }
-            }
-        );
+        const res = await api.get('/api/cart', config);
         return res.data;
-    }, [token, backendUrl]); // backendUrl'i dependency olarak ekledik
+    }, [token]);
 
     const deleteFromCart = async (productId: number) => {
-        await axios.delete(
-            `${backendUrl}/api/cart/item?productId=${productId}`,
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await api.delete(`/api/cart/item?productId=${productId}`, config);
     };
 
     const clearCart = async () => {
-        await axios.delete(
-            `${backendUrl}/api/cart`,
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await api.delete('/api/cart', config);
     };
 
     return { addToCart, getCart, deleteFromCart, clearCart };

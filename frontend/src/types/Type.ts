@@ -12,11 +12,6 @@ export type Category = {
     name: string;
 };
 
-export type SidebarProps = {
-    selected: string[];
-    onChange: (category: string, checked: boolean) => void;
-    categories: Category[];
-};
 
 export type User = {
     id: number;
@@ -24,16 +19,33 @@ export type User = {
     token: string;
 };
 
-// CartItem tanımını backend'den gelen CartItemResponse ile eşleştirin
+
 export type CartItem = {
     productId: number;
     productName: string;
-    productImage: string; // Resim eklendi
-    productPrice: number; // Fiyat eklendi
+    productImage: string;
+    productPrice: number;
     quantity: number;
 };
 
 export type NavbarProps = {
     onSearchChange: (value: string) => void;
     search: string;
+};
+
+export type DetailContentProps = {
+    product: Product;
+};
+
+export type SidebarProps = {
+    selected: string[];
+    onChange: (category: string, checked: boolean) => void;
+    categories: Category[],
+    className?: string
+};
+
+export type AuthContextType = {
+    user: User | null;
+    setUser: (user: User) => void;
+    logout: () => void;
 };

@@ -19,20 +19,17 @@ import { useState } from 'react';
 import { CartItem } from '@/types/Type';
 import { useRouter } from 'next/navigation';
 import LoginRequiredModal from "@/components/LoginRequeiredModal";
-
-type NavbarProps = {
-    search: string;
-    onSearchChange: (value: string) => void;
-};
+import { NavbarProps } from '@/types/Type';
+import { useCartContext } from '@/context/CartContext';
 
 export default function Navbar({ search, onSearchChange }: NavbarProps) {
     const { user, logout } = useAuth();
     const { getCart } = useCart(user?.token || '');
     const [showCart, setShowCart] = useState(false);
-    const [cartItems, setCartItems] = useState<CartItem[]>([]);
-    const [loadingCart, setLoadingCart] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const { cartItems, refreshCart } = useCartContext();
     const router = useRouter();
+
 
     const handleCartClick = async () => {
         if (!user) {
@@ -40,16 +37,8 @@ export default function Navbar({ search, onSearchChange }: NavbarProps) {
             return;
         }
 
-        setLoadingCart(true);
-        try {
-            const data = await getCart();
-            setCartItems(data);
-            setShowCart(!showCart);
-        } catch (err) {
-            console.error('Cart fetch error', err);
-        } finally {
-            setLoadingCart(false);
-        }
+        await refreshCart();
+        setShowCart(!showCart);
     };
 
     const handleUserClick = () => {
@@ -103,9 +92,7 @@ export default function Navbar({ search, onSearchChange }: NavbarProps) {
                     <Typography variant="h6">My Cart</Typography>
                     <Divider className="my-2" />
 
-                    {loadingCart ? (
-                        <Typography>Loading...</Typography>
-                    ) : cartItems.length === 0 ? (
+                    {cartItems.length === 0 ? (
                         <Typography>No items in cart</Typography>
                     ) : (
                         cartItems.map((item) => (
