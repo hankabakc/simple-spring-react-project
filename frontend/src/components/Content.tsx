@@ -6,7 +6,7 @@ import { Product } from "@/types/Type";
 import { Card, CardContent, CardActions, Typography, Button, Divider, CardMedia } from "@mui/material";
 import Link from "next/link";
 import LoginRequiredModal from "./LoginRequeiredModal";
-import axios from 'axios'; // Axios'u import ettiğinizden emin olun
+import axios from 'axios';
 
 export default function Content({ products }: { products: Product[] }) {
     const [showLoginModal, setShowLoginModal] = useState(false);
@@ -21,7 +21,7 @@ export default function Content({ products }: { products: Product[] }) {
         try {
             await addToCart(productId, 1);
             alert("Product added to cart!");
-        } catch (error: any) { // Hata objesini yakalayın
+        } catch (error: any) {
             console.error("Sepete ürün eklenirken hata oluştu:", error.response?.data || error.message || error);
             alert("Sepete ürün eklenirken hata oluştu. Detaylar için konsola bakın.");
         }
@@ -33,27 +33,27 @@ export default function Content({ products }: { products: Product[] }) {
                 {products.map((product) => (
                     <Card
                         key={product.id}
-                        className="bg-purple-950 border border-blue-500 rounded-xl shadow-none flex flex-col items-center"
+                        className="card-primary flex flex-col items-center"
                     >
                         <Link href={`/products/detail?id=${product.id}`} className="w-full">
-                            <CardContent className="p-6 w-full flex flex-col items-center">
+                            <CardContent className="p-default w-full flex flex-col items-center">
                                 <CardMedia
                                     component="img"
                                     image={`data:image/jpeg;base64,${product.base64Image}`}
                                     alt={product.name}
-                                    className="w-full h-48 object-cover mb-4 rounded"
+                                    className="w-full h-48 object-cover mb-default rounded"
                                 />
 
-                                <Typography variant="h6" className="text-gray-200 font-bold mb-2 text-center">
+                                <Typography variant="h6" className="text-primary text-bold mb-default text-centered">
                                     {product.name}
                                 </Typography>
 
-                                <Divider className="border-blue-500 w-full mb-2" />
+                                <Divider className="divider-primary w-full mb-default" />
 
-                                <Typography variant="body2" className="text-gray-300 text-center mb-2">
+                                <Typography variant="body2" className="text-secondary text-centered mb-default">
                                     {product.explanation}
                                 </Typography>
-                                <Typography variant="subtitle1" className="text-gray-100 font-semibold text-center">
+                                <Typography variant="subtitle1" className="text-price font-semibold text-centered">
                                     ${product.price}
                                 </Typography>
                             </CardContent>
@@ -61,7 +61,7 @@ export default function Content({ products }: { products: Product[] }) {
                         <CardActions className="w-full flex justify-center pb-4">
                             <Button
                                 variant="contained"
-                                className="bg-blue-600 hover:bg-blue-700 text-white"
+                                className="btn-primary"
                                 onClick={() => handleAddToCart(product.id)}
                             >
                                 Sepete Ekle

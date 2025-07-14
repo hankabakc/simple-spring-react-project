@@ -65,7 +65,7 @@ export default function Navbar({ search, onSearchChange }: NavbarProps) {
         <>
             <AppBar
                 position="static"
-                className="bg-purple-950 border-b border-b-blue-500 shadow-none"
+                className="bg-purple-950 border-b divider-primary shadow-none"
             >
                 <Toolbar className="flex justify-between items-center px-5 h-20">
                     <Box className="flex items-center">
@@ -76,20 +76,20 @@ export default function Navbar({ search, onSearchChange }: NavbarProps) {
                             value={search}
                             onChange={(e) => onSearchChange(e.target.value)}
                             color="secondary"
-                            className="bg-white rounded"
+                            className="search-input"
                         />
                     </Box>
                     <ButtonGroup variant="text" className="space-x-2">
                         <Button
                             startIcon={<PersonIcon />}
                             onClick={handleUserClick}
-                            className="text-gray-200 hover:bg-purple-800/30"
+                            className="navbar-button"
                         >
                             {user ? 'Logout' : 'Login'}
                         </Button>
                         <Button
                             startIcon={<ShoppingCartIcon />}
-                            className="text-gray-200 hover:bg-purple-800/30"
+                            className="navbar-button"
                             onClick={handleCartClick}
                         >
                             Sepet
@@ -118,7 +118,7 @@ export default function Navbar({ search, onSearchChange }: NavbarProps) {
 
                     <Divider className="my-2" />
                     <Link href="/cart">
-                        <Button variant="contained" fullWidth color="primary">
+                        <Button variant="contained" fullWidth color="primary" className="btn-primary">
                             Go to Cart
                         </Button>
                     </Link>

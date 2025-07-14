@@ -39,12 +39,13 @@ export default function Sidebar({ selected, onChange }: SidebarProps) {
     return (
         <Paper
             elevation={3}
-            className="h-screen w-56 bg-purple-950 flex flex-col p-4 shadow-none border-r border-blue-500"
+            className="h-screen w-56 card-primary flex flex-col p-default border-r"
         >
-            <Typography variant="h6" className="text-gray-200 mb-3">
+            <Typography variant="h6" className="text-primary mb-3">
                 Kategoriler
             </Typography>
-            <Divider className="mb-3 border-blue-500" />
+
+            <Divider className="mb-3 divider-primary" />
 
             <FormControl component="fieldset" className="flex-1">
                 <FormGroup className="space-y-2">
@@ -55,11 +56,11 @@ export default function Sidebar({ selected, onChange }: SidebarProps) {
                                 <Checkbox
                                     checked={selected.includes(cat.name)}
                                     onChange={(e) => onChange(cat.name, e.target.checked)}
-                                    className="text-gray-300 hover:bg-purple-800/30 rounded"
+                                    className="category-checkbox"
                                 />
                             }
                             label={
-                                <Typography className="text-gray-200">
+                                <Typography className="text-primary">
                                     {cat.name}
                                 </Typography>
                             }

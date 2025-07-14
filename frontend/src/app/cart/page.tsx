@@ -15,8 +15,8 @@ import {
     Divider,
     Stack
 } from '@mui/material';
-import { useAuth } from '@/context/AuthContext'; // useAuth'ı import edin
-import { useCart } from '@/hooks/useCart'; // useCart'ı import edin
+import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/hooks/useCart';
 
 type CartItemResponse = {
     productId: number;
@@ -27,15 +27,13 @@ type CartItemResponse = {
 };
 
 export default function CartPage() {
-    const { user } = useAuth(); // Kullanıcı bilgisini useAuth'tan alın
-    const { getCart, addToCart, deleteFromCart, clearCart: clearCartHook } = useCart(user?.token || ''); // useCart hook'unu kullanın
+    const { user } = useAuth();
+    const { getCart, addToCart, deleteFromCart, clearCart: clearCartHook } = useCart(user?.token || '');
 
-    // State
     const [cartItems, setCartItems] = useState<CartItemResponse[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Sepeti çek
     const fetchCart = async () => {
         if (!user?.token) {
             setError('Sepeti görüntülemek için giriş yapmalısınız.');
@@ -43,9 +41,9 @@ export default function CartPage() {
             return;
         }
         setLoading(true);
-        setError(null); // Önceki hataları temizle
+        setError(null);
         try {
-            const data = await getCart(); // useCart hook'undan getCart'ı kullan
+            const data = await getCart();
             setCartItems(data);
         } catch (err: any) {
             console.error('Sepet yüklenirken hata oluştu:', err.response?.data || err.message || err);
@@ -57,13 +55,13 @@ export default function CartPage() {
 
     useEffect(() => {
         fetchCart();
-    }, [user?.token]); // user.token değiştiğinde sepeti tekrar çek
+    }, [user?.token]);
 
     const removeItem = async (productId: number) => {
         if (!user?.token) return;
         try {
-            await deleteFromCart(productId); // useCart hook'undan deleteFromCart'ı kullan
-            fetchCart(); // Sepeti yeniden çek
+            await deleteFromCart(productId);
+            fetchCart();
         } catch (err: any) {
             console.error('Ürün silinirken hata oluştu:', err.response?.data || err.message || err);
             setError('Ürün silinirken hata oluştu.');
@@ -73,15 +71,15 @@ export default function CartPage() {
     const clearCart = async () => {
         if (!user?.token) return;
         try {
-            await clearCartHook(); // useCart hook'undan clearCart'ı kullan
-            fetchCart(); // Sepeti yeniden çek
+            await clearCartHook();
+            fetchCart();
         } catch (err: any) {
             console.error('Sepet temizlenirken hata oluştu:', err.response?.data || err.message || err);
             setError('Sepet temizlenirken hata oluştu.');
         }
     };
 
-    if (!user) { // userId yerine user objesini kontrol edin
+    if (!user) {
         return (
             <Box className="flex justify-center items-center min-h-[50vh]">
                 <Alert severity="error">❗ Sepeti görüntülemek için kullanıcı girişi gerekiyor.</Alert>
@@ -89,7 +87,6 @@ export default function CartPage() {
         );
     }
 
-    // Loading state
     if (loading) {
         return (
             <Box className="flex justify-center items-center min-h-[50vh]">
@@ -98,7 +95,6 @@ export default function CartPage() {
         );
     }
 
-    // Error state
     if (error) {
         return (
             <Box className="flex justify-center items-center min-h-[50vh]">
@@ -107,10 +103,9 @@ export default function CartPage() {
         );
     }
 
-    // Main render
     return (
         <Box className="max-w-5xl mx-auto p-4">
-            <Typography variant="h4" className="mb-4 text-center font-bold text-gray-200">
+            <Typography variant="h4" className="mb-default text-bold text-centered text-primary">
                 Sepetim
             </Typography>
 
@@ -120,29 +115,29 @@ export default function CartPage() {
                 <Stack spacing={2}>
                     <Grid container spacing={2}>
                         {cartItems.map((item) => (
-                            <Grid key={item.productId}> {/* Responsive grid ayarları */}
-                                <Card className="shadow-lg rounded-lg bg-purple-950 border border-blue-500">
+                            <Grid key={item.productId} >
+                                <Card className="card-primary">
                                     <CardMedia
                                         component="img"
                                         image={`data:image/png;base64,${item.productImage}`}
                                         alt={item.productName}
                                         className="h-48 object-cover"
                                     />
-                                    <CardContent className="flex flex-col space-y-2 text-gray-200">
-                                        <Typography variant="h6" className="font-semibold text-center">
+                                    <CardContent className="flex flex-col space-y-2 text-primary">
+                                        <Typography variant="h6" className="text-bold text-centered">
                                             {item.productName}
                                         </Typography>
-                                        <Typography variant="body2" className="text-center text-gray-300">
+                                        <Typography variant="body2" className="text-centered text-secondary">
                                             Fiyat: ₺{item.productPrice}
                                         </Typography>
-                                        <Typography variant="body2" className="text-center text-gray-300">
+                                        <Typography variant="body2" className="text-centered text-secondary">
                                             Adet: {item.quantity}
                                         </Typography>
                                         <Button
                                             variant="outlined"
                                             color="error"
                                             onClick={() => removeItem(item.productId)}
-                                            className="mt-2"
+                                            className="btn-outlined-error mt-2"
                                         >
                                             Ürünü Kaldır
                                         </Button>
@@ -151,13 +146,13 @@ export default function CartPage() {
                             </Grid>
                         ))}
                     </Grid>
-                    <Divider className="my-4 border-blue-500" />
+                    <Divider className="my-4 divider-primary" />
                     <Box className="flex justify-end">
                         <Button
                             variant="contained"
                             color="error"
                             onClick={clearCart}
-                            className="hover:bg-red-700"
+                            className="btn-error"
                         >
                             Sepeti Temizle
                         </Button>

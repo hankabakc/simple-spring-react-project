@@ -21,7 +21,6 @@ function parseJwt(token: string): { id: number; username: string } {
 export default function LoginPage() {
     const { setUser } = useAuth();
     const router = useRouter();
-
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -37,7 +36,6 @@ export default function LoginPage() {
                 username,
                 password
             });
-
             const token = res.data.token;
             const payload = parseJwt(token);
 
@@ -46,7 +44,6 @@ export default function LoginPage() {
                 username: payload.username,
                 token
             });
-
             router.push('/products');
         } catch (err: any) {
             console.error(err);
@@ -58,10 +55,10 @@ export default function LoginPage() {
 
     return (
         <Box className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
-            <Paper elevation={3} className="p-6 max-w-md w-full">
-                <Typography variant="h5" className="mb-4 font-bold text-center">Login</Typography>
+            <Paper elevation={3} className="p-default max-w-md w-full rounded-xl">
+                <Typography variant="h5" className="mb-default text-bold text-centered">Login</Typography>
 
-                {error && <Alert severity="error" className="mb-4">{error}</Alert>}
+                {error && <Alert severity="error" className="mb-default">{error}</Alert>}
 
                 <form onSubmit={handleSubmit}>
                     <Stack spacing={2}>
@@ -88,6 +85,7 @@ export default function LoginPage() {
                             variant="contained"
                             color="primary"
                             disabled={loading}
+                            className="btn-primary"
                         >
                             {loading ? <CircularProgress size={24} /> : 'Login'}
                         </Button>
