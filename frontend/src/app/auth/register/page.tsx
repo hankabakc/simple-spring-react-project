@@ -19,7 +19,6 @@ function parseJwt(token: string): { id: number; username: string } {
 
 export default function RegisterPage() {
     const { setUser } = useAuth();
-
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -30,19 +29,16 @@ export default function RegisterPage() {
         e.preventDefault();
         setError(null);
         setLoading(true);
-
         try {
             await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/register`, {
                 email,
                 username,
                 password
             });
-
             const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
                 username,
                 password
             });
-
             const token = res.data.token;
             const payload = parseJwt(token);
 
@@ -51,7 +47,6 @@ export default function RegisterPage() {
                 username: payload.username,
                 token
             });
-
             window.location.href = '/';
         } catch (err: any) {
             setError('Kayıt başarısız. Lütfen bilgilerinizi kontrol edin.');
@@ -59,13 +54,12 @@ export default function RegisterPage() {
             setLoading(false);
         }
     };
-
     return (
         <Box className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
-            <Paper elevation={3} className="p-6 max-w-md w-full">
-                <Typography variant="h5" className="mb-4 font-bold text-center">Kayıt Ol</Typography>
+            <Paper elevation={3} className="p-default max-w-md w-full rounded-xl">
+                <Typography variant="h5" className="mb-default text-bold text-centered">Kayıt Ol</Typography>
 
-                {error && <Alert severity="error" className="mb-4">{error}</Alert>}
+                {error && <Alert severity="error" className="mb-default">{error}</Alert>}
 
                 <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
                     <TextField
@@ -99,6 +93,7 @@ export default function RegisterPage() {
                         variant="contained"
                         color="primary"
                         disabled={loading}
+                        className="btn-primary"
                     >
                         {loading ? <CircularProgress size={24} /> : 'Kayıt Ol'}
                     </Button>

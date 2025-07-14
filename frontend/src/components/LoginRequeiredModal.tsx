@@ -5,12 +5,10 @@ import { useRouter } from 'next/navigation';
 
 export default function LoginRequiredModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     const router = useRouter();
-
     const handleLoginClick = () => {
         onClose();
         router.push('/auth/login');
     };
-
     return (
         <Modal
             open={open}
@@ -19,20 +17,20 @@ export default function LoginRequiredModal({ open, onClose }: { open: boolean; o
             aria-describedby="login-required-description"
         >
             <Box
-                className="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full mx-auto mt-40 border border-blue-500"
+                className="modal-paper"
                 sx={{ outline: 'none' }}
             >
                 <Typography
                     id="login-required-title"
                     variant="h6"
-                    className="text-center font-bold text-blue-500 mb-4"
+                    className="text-centered text-blue-500 mb-default text-bold"
                 >
                     Login Required
                 </Typography>
 
                 <Typography
                     id="login-required-description"
-                    className="text-center text-gray-700 mb-6"
+                    className="text-centered text-gray-700 mb-6"
                 >
                     You need to be logged in to view your cart.
                 </Typography>
@@ -42,7 +40,7 @@ export default function LoginRequiredModal({ open, onClose }: { open: boolean; o
                         variant="outlined"
                         color="primary"
                         onClick={onClose}
-                        className="border-blue-500 text-blue-500 hover:bg-blue-500"
+                        className="btn-outlined-primary"
                     >
                         Close
                     </Button>
@@ -51,7 +49,7 @@ export default function LoginRequiredModal({ open, onClose }: { open: boolean; o
                         variant="contained"
                         color="primary"
                         onClick={handleLoginClick}
-                        className="bg-blue-500 hover:bg-blue-500"
+                        className="btn-primary"
                     >
                         Login
                     </Button>

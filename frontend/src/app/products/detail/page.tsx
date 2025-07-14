@@ -12,6 +12,11 @@ export default function ProductDetailPage() {
     const id = searchParams.get('id');
 
     const [product, setProduct] = useState<Product | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const handleSearchChange = (value: string) => {
+        setSearchQuery(value);
+    };
 
     useEffect(() => {
         if (id) {
@@ -32,7 +37,7 @@ export default function ProductDetailPage() {
 
     return (
         <div>
-            <Navbar />
+            <Navbar search={searchQuery} onSearchChange={handleSearchChange} />
             <DetailContent product={product} />
         </div>
     );

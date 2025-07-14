@@ -37,40 +37,29 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
-    // CORS yapılandırmasını doğrudan Spring Security'ye entegre ediyoruz
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true); // Kimlik bilgilerini (örneğin çerezler, Authorization başlığı) göndermeye
-                                          // izin ver
+        config.setAllowCredentials(true);
         config.setAllowedOrigins(
-                Arrays.asList("http://localhost:3000", "https://simple-spring-react-project.onrender.com")); // Frontend'inizin
-                                                                                                             // URL'sini
-                                                                                                             // ve
-                                                                                                             // Render
-                                                                                                             // URL'sini
-                                                                                                             // buraya
-                                                                                                             // ekleyin
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // İzin verilen HTTP
-                                                                                            // metodları
-        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept")); // İzin verilen başlıklar
-        config.setExposedHeaders(Arrays.asList("Authorization")); // Tarayıcıya gösterilecek başlıklar
-        config.setMaxAge(3600L); // Preflight isteğinin önbellekte ne kadar süre kalacağı (saniye cinsinden)
-        source.registerCorsConfiguration("/**", config); // Tüm yollara bu CORS yapılandırmasını uygula
+                Arrays.asList("http://localhost:3000", "https://simple-spring-react-project.onrender.com"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
+        config.setExposedHeaders(Arrays.asList("Authorization"));
+        config.setMaxAge(3600L);
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.disable()) // CSRF'yi devre dışı bırak
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // <-- BURADA DEĞİŞİKLİK: CORS'u
-                                                                                   // entegre et
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/products/**", "/api/categories/**").permitAll()
-                        .anyRequest().authenticated())
+                        // GEÇİCİ OLARAK TÜM İSTEKLERE İZİN VER (Test Amaçlı)
+                        .anyRequest().permitAll()) // <-- BU SATIRI DEĞİŞTİRİN
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
