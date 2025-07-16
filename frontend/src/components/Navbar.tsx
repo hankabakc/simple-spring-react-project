@@ -1,3 +1,5 @@
+// src/components/Navbar.tsx
+
 'use client';
 
 import {
@@ -17,10 +19,11 @@ import { useAuth } from "@/context/AuthContext";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import LoginRequiredModal from "@/components/LoginRequeiredModal";
+// NavbarProps tipinizi güncelleyeceğiz
 import { NavbarProps } from '@/types/Type';
 import { useCartContext } from '@/context/CartContext';
 
-export default function Navbar({ search, onSearchChange }: NavbarProps) {
+export default function Navbar({ search, onSearchChange, onSearchSubmit }: NavbarProps) { // DEĞİŞİKLİK: onSearchSubmit eklendi
     const { user, logout } = useAuth();
     const [showCart, setShowCart] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
@@ -46,6 +49,13 @@ export default function Navbar({ search, onSearchChange }: NavbarProps) {
         }
     };
 
+    // YENİ: TextField içinde Enter tuşuna basıldığında çağrılacak fonksiyon
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            onSearchSubmit(search); // ProductsPage'e arama terimini gönder
+        }
+    };
+
     return (
         <>
             <AppBar
@@ -60,6 +70,7 @@ export default function Navbar({ search, onSearchChange }: NavbarProps) {
                             size="small"
                             value={search}
                             onChange={(e) => onSearchChange(e.target.value)}
+                            onKeyDown={handleKeyPress}
                             color="secondary"
                             className="search-input"
                         />
