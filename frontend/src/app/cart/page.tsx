@@ -19,29 +19,11 @@ import {
 import LoginRequiredModal from '@/components/LoginRequeiredModal';
 import { useRouter } from 'next/navigation';
 import CartItemRow from '@/components/CartItemRow';
+import MessageBox from '@/components/MessageBox';
 
-// Custom Message Box Component
-const MessageBox = ({ open, title, message, onClose }: {
-    open: boolean;
-    title: string;
-    message: string;
-    onClose: () => void;
-}) => (
-    <Dialog open={open} onClose={onClose}>
-        <DialogTitle>{title}</DialogTitle>
-        <DialogContent>
-            <Typography>{message}</Typography>
-        </DialogContent>
-        <DialogActions>
-            <Button onClick={onClose} color="primary" autoFocus>
-                OK
-            </Button>
-        </DialogActions>
-    </Dialog>
-);
 
 export default function CartPage() {
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const router = useRouter();
     const { getCart, addToCart, setCartQuantity, deleteFromCart, clearCart } = useCart(user?.token || '');
 
@@ -61,13 +43,16 @@ export default function CartPage() {
     };
 
     useEffect(() => {
+        if (authLoading) return;
+
         if (!user) {
             setShowLoginModal(true);
             setLoading(false);
             return;
         }
+
         fetchCartItems();
-    }, [user]);
+    }, [user, authLoading, getCart]);
 
     const fetchCartItems = async () => {
         setLoading(true);
@@ -82,25 +67,25 @@ export default function CartPage() {
         }
     };
 
-    const handleChangeQuantity = async (item: CartItem, delta: number) => {
-        if (!user) {
-            setShowLoginModal(true);
-            return;
-        }
-        const newQuantity = item.quantity + delta;
-        try {
-            if (newQuantity <= 0) {
-                await deleteFromCart(item.productId);
-            } else {
-                await setCartQuantity(item.productId, newQuantity);
-
+    /*     const handleChangeQuantity = async (item: CartItem, delta: number) => {
+            if (!user) {
+                setShowLoginModal(true);
+                return;
             }
-            fetchCartItems();
-        } catch (error) {
-            console.error("Quantity change error:", error);
-            showMessage("Error", "Could not update quantity.");
-        }
-    };
+            const newQuantity = item.quantity + delta;
+            try {
+                if (newQuantity <= 0) {
+                    await deleteFromCart(item.productId);
+                } else {
+                    await setCartQuantity(item.productId, newQuantity);
+    
+                }
+                fetchCartItems();
+            } catch (error) {
+                console.error("Quantity change error:", error);
+                showMessage("Error", "Could not update quantity.");
+            }
+        }; */
 
     const handleRemoveFromCart = async (productId: number) => {
         if (!user) {
@@ -150,7 +135,7 @@ export default function CartPage() {
         }
     };
 
-    if (loading) {
+    if (authLoading || loading) {
         return <div className="text-center mt-10">Loading cart...</div>;
     }
 
@@ -207,6 +192,7 @@ export default function CartPage() {
                     </>
                 )}
             </Paper>
+
             <LoginRequiredModal
                 open={showLoginModal}
                 onClose={() => {

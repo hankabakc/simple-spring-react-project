@@ -46,6 +46,7 @@ export type SidebarProps = {
 
 export type AuthContextType = {
     user: User | null;
-    setUser: (user: User) => void;
+    setUser: (user: User | null) => void;
     logout: () => void;
+    loading: boolean;
 };

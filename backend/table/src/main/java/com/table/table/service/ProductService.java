@@ -39,6 +39,16 @@ public class ProductService {
         return dto;
     }
 
+    private ProductResponse mapToResponse(Product product) {
+        return new ProductResponse(
+                product.getId(),
+                product.getName(),
+                product.getExplanation(),
+                product.getPrice(),
+                product.getBase64Image(),
+                product.getCategory().getName());
+    }
+
     @Transactional(readOnly = true)
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll().stream()
@@ -63,8 +73,7 @@ public class ProductService {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
 
-        // *** BU SATIRI EKLEYİN ***
-        product.setCategory(category); // <-- Kategori objesini Product'a set ediyoruz
+        product.setCategory(category);
 
         MultipartFile image = request.getImage();
         if (image != null && !image.isEmpty()) {
@@ -83,5 +92,16 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found : " + id));
         productRepository.delete(product);
+    }
+
+    public List<ProductResponse> searchProducts(String search, List<Long> categoryIds) {
+        List<Product> products = productRepository
+                .findByNameContainingIgnoreCaseOrCategoryIdIn(
+                        (search != null ? search : ""),
+                        (categoryIds != null && !categoryIds.isEmpty()) ? categoryIds : List.of(-1L));
+
+        return products.stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 }
