@@ -24,7 +24,6 @@ import { useCartContext } from '@/context/CartContext';
 
 export default function Navbar({ search, onSearchChange }: NavbarProps) {
     const { user, logout } = useAuth();
-    const { getCart } = useCart(user?.token || '');
     const [showCart, setShowCart] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const { cartItems, refreshCart } = useCartContext();

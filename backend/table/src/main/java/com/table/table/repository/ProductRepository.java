@@ -1,9 +1,11 @@
 package com.table.table.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.table.table.model.Product;
 
-public interface  ProductRepository extends JpaRepository<Product, Long> {
-    
+public interface ProductRepository extends JpaRepository<Product, Long> {
+    List<Product> findByNameContainingIgnoreCaseOrCategoryIdIn(String name, List<Long> categoryIds);
 }
