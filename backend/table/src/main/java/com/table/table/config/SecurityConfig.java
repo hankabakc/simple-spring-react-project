@@ -76,18 +76,19 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Spring Security'nin kendi CORS
-                                                                                   // entegrasyonu
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
                         // 1️⃣ PUBLIC erişilebilen endpointler
                         .requestMatchers(
                                 "/auth/**",
-                                "/api/auth/**", // <-- /api/auth/login gibi yollar için
+                                "/api/auth/**",
                                 "/products",
                                 "/products/**",
-                                "/api/products/search", // <-- Önceki konuşmadan ekledik
+                                "/api/products/search",
+                                "/categories", // <-- BURAYI EKLEDİK!
+                                "/api/categories", // <-- BURAYI DA EKLEDİK (eğer /api ile başlıyorsa)
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
