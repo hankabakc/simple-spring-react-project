@@ -15,8 +15,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry; // Yeni import
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer; // Yeni import
 
 import com.table.table.security.JwtAuthenticationFilter;
 
@@ -55,22 +53,24 @@ public class SecurityConfig {
         return source;
     }
 
-    // Yeni WebMvcConfigurer Bean'i (Spring MVC için CORS)
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // Tüm yollar için CORS ayarları
-                        .allowedOrigins("http://localhost:3000", "https://simple-spring-react-project.onrender.com")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("Authorization", "Content-Type", "Accept") // İzin verilen başlıklar
-                        .exposedHeaders("Authorization")
-                        .allowCredentials(true)
-                        .maxAge(3600);
-            }
-        };
-    }
+    // Yeni WebMvcConfigurer Bean'i (Spring MVC için CORS) - KALDIRILDI
+    // @Bean
+    // public WebMvcConfigurer corsConfigurer() {
+    // return new WebMvcConfigurer() {
+    // @Override
+    // public void void addCorsMappings(CorsRegistry registry) {
+    // registry.addMapping("/**") // Tüm yollar için CORS ayarları
+    // .allowedOrigins("http://localhost:3000",
+    // "https://simple-spring-react-project.onrender.com")
+    // .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+    // .allowedHeaders("Authorization", "Content-Type", "Accept") // İzin verilen
+    // başlıklar
+    // .exposedHeaders("Authorization")
+    // .allowCredentials(true)
+    // .maxAge(3600);
+    // }
+    // };
+    // }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
