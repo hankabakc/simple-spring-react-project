@@ -15,6 +15,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry; // Yeni import
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer; // Yeni import
 
 import com.table.table.security.JwtAuthenticationFilter;
 
@@ -37,6 +39,7 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
+    // Mevcut CORS yapılandırması (Spring Security için)
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -52,19 +55,39 @@ public class SecurityConfig {
         return source;
     }
 
+    // Yeni WebMvcConfigurer Bean'i (Spring MVC için CORS)
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**") // Tüm yollar için CORS ayarları
+                        .allowedOrigins("http://localhost:3000", "https://simple-spring-react-project.onrender.com")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("Authorization", "Content-Type", "Accept") // İzin verilen başlıklar
+                        .exposedHeaders("Authorization")
+                        .allowCredentials(true)
+                        .maxAge(3600);
+            }
+        };
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Spring Security'nin kendi CORS
+                                                                                   // entegrasyonu
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
                         // 1️⃣ PUBLIC erişilebilen endpointler
                         .requestMatchers(
                                 "/auth/**",
+                                "/api/auth/**", // <-- /api/auth/login gibi yollar için
                                 "/products",
                                 "/products/**",
+                                "/api/products/search", // <-- Önceki konuşmadan ekledik
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
@@ -82,5 +105,4 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
 }
