@@ -1,8 +1,8 @@
+
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User } from '@/types/Type';
-import { AuthContextType } from '@/types/Type';
+import { User, AuthContextType } from '@/types/Type'; // Type importunu güncelledim
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -13,14 +13,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
-            setUserState(JSON.parse(storedUser));
-        }
-    }, []);
-
-    useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUserState(JSON.parse(storedUser));
+            try {
+                setUserState(JSON.parse(storedUser));
+            } catch (error) {
+                console.error("Failed to parse user from localStorage:", error);
+                localStorage.removeItem('user'); // Hatalı veriyi temizle
+            }
         }
         setLoading(false);
     }, []);
