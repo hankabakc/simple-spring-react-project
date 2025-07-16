@@ -58,8 +58,10 @@ export default function Sidebar({ selected, onChange, categories, className }: S
                     key={category.id}
                     control={
                         <Checkbox
-                            checked={selected.includes(category.name)}
-                            onChange={(e) => onChange(category.name, e.target.checked)}
+                            // DEĞİŞİKLİK 1: selected prop'u artık ID'leri içerecek
+                            checked={selected.includes(category.id)}
+                            // DEĞİŞİKLİK 2: onChange fonksiyonuna kategori adı yerine ID gönder
+                            onChange={(e) => onChange(category.id, e.target.checked)}
                             className="category-checkbox"
                         />
                     }

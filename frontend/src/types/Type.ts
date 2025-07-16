@@ -38,10 +38,10 @@ export type DetailContentProps = {
 };
 
 export type SidebarProps = {
-    selected: string[];
-    onChange: (category: string, checked: boolean) => void;
-    categories: Category[],
-    className?: string
+    categories: Category[];
+    selected: number[];
+    onChange: (categoryId: number, checked: boolean) => void;
+    className?: string;
 };
 
 export type AuthContextType = {

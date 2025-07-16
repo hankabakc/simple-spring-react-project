@@ -3,6 +3,7 @@ package com.table.table.service;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -39,14 +40,18 @@ public class ProductService {
         return dto;
     }
 
-    private ProductResponse mapToResponse(Product product) {
+    private ProductResponse mapToProductResponse(Product product) {
+        if (product == null) {
+            return null;
+        }
+        String categoryName = (product.getCategory() != null) ? product.getCategory().getName() : null;
         return new ProductResponse(
                 product.getId(),
                 product.getName(),
                 product.getExplanation(),
                 product.getPrice(),
                 product.getBase64Image(),
-                product.getCategory().getName());
+                categoryName);
     }
 
     @Transactional(readOnly = true)
@@ -94,14 +99,26 @@ public class ProductService {
         productRepository.delete(product);
     }
 
+    @Transactional(readOnly = true)
     public List<ProductResponse> searchProducts(String search, List<Long> categoryIds) {
-        List<Product> products = productRepository
-                .findByNameContainingIgnoreCaseOrCategoryIdIn(
-                        (search != null ? search : ""),
-                        (categoryIds != null && !categoryIds.isEmpty()) ? categoryIds : List.of(-1L));
+        List<Product> products;
+
+        boolean hasSearchTerm = search != null && !search.trim().isEmpty();
+        boolean hasCategoryIds = categoryIds != null && !categoryIds.isEmpty();
+
+        if (hasSearchTerm && hasCategoryIds) {
+            products = productRepository.findByNameContainingIgnoreCaseAndCategoryIdIn(search, categoryIds);
+        } else if (hasSearchTerm) {
+            products = productRepository.findByNameContainingIgnoreCase(search);
+        } else if (hasCategoryIds) {
+            products = productRepository.findByCategoryIdIn(categoryIds);
+        } else {
+            // Hem arama terimi hem de kategori ID'leri boşsa, tüm ürünleri getir
+            products = productRepository.findAll();
+        }
 
         return products.stream()
-                .map(this::mapToResponse)
-                .toList();
+                .map(this::mapToProductResponse)
+                .collect(Collectors.toList());
     }
 }

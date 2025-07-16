@@ -56,11 +56,13 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    // Ürün Arama ve Filtreleme Endpoint'i
     @GetMapping("/search")
     public ResponseEntity<List<ProductResponse>> searchProducts(
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) List<Long> categories) {
-        List<ProductResponse> products = productService.searchProducts(search, categories);
+            @RequestParam(required = false) String search, // Arama terimi (opsiyonel)
+            @RequestParam(required = false) List<Long> categoryIds) { // Kategori ID'leri listesi (opsiyonel)
+
+        List<ProductResponse> products = productService.searchProducts(search, categoryIds);
         return ResponseEntity.ok(products);
     }
 }

@@ -14,9 +14,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Link from 'next/link';
 import { useAuth } from "@/context/AuthContext";
-import { useCart } from "@/hooks/useCart";
 import { useState } from 'react';
-import { CartItem } from '@/types/Type';
 import { useRouter } from 'next/navigation';
 import LoginRequiredModal from "@/components/LoginRequeiredModal";
 import { NavbarProps } from '@/types/Type';
@@ -28,7 +26,6 @@ export default function Navbar({ search, onSearchChange }: NavbarProps) {
     const [showLoginModal, setShowLoginModal] = useState(false);
     const { cartItems, refreshCart } = useCartContext();
     const router = useRouter();
-
 
     const handleCartClick = async () => {
         if (!user) {
