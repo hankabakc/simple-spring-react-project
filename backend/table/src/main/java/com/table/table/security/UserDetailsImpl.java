@@ -45,7 +45,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email; // login sırasında email ile giriş yapacağımız için
+        return username;
     }
 
     @Override

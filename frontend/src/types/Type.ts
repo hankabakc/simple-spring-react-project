@@ -29,8 +29,9 @@ export type CartItem = {
 };
 
 export type NavbarProps = {
-    onSearchChange: (value: string) => void;
     search: string;
+    onSearchChange: (value: string) => void;
+    onSearchSubmit: (value: string) => void;
 };
 
 export type DetailContentProps = {
