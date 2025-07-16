@@ -81,5 +81,16 @@
         </insert>
     </changeSet>
 
+    <changeSet id="xml-ins-7" author="han">
+        <insert tableName="users">
+            <column name="id" value="9"></column>
+            <column name="email" value="bugrahanhan@han.com"></column>
+            <column name="username" value="bugrahanhan"></column>
+            <column name="role_id" value="1"></column>
+            <column name="password"
+                value="$2a$12$.m5MUyWZctteH4egxXTAmOPEqY2rN3zE3nbHwTH4/gI4sPVY6eheG"></column>
+        </insert>
+    </changeSet>
+
 
 </databaseChangeLog>

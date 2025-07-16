@@ -2,7 +2,7 @@
 
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react'; // useRef'i import edin
 import Content from '@/components/Content';
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
@@ -23,40 +23,51 @@ export default function ProductsPage() {
     const [currentSearchInput, setCurrentSearchInput] = useState(urlSearchQuery);
 
     const selectedCategoryIds = searchParams.getAll('categoryIds').map(Number).filter(id => !isNaN(id));
+    const fetchedCategoriesRef = useRef(false);
 
     useEffect(() => {
-        const fetchProductsAndCategories = async () => {
+        if (fetchedCategoriesRef.current) {
+            return;
+        }
+        const fetchCategories = async () => {
             try {
-                setLoading(true);
+                const categoriesRes = await api.get('/api/categories');
+                setCategories(categoriesRes.data);
+                fetchedCategoriesRef.current = true;
+            } catch (err) {
+                console.error("Kategoriler çekilirken hata oluştu:", err);
 
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            setLoading(true);
+            try {
                 const query = new URLSearchParams();
                 if (urlSearchQuery) query.set('search', urlSearchQuery);
 
                 selectedCategoryIds.forEach((id) => query.append('categoryIds', id.toString()));
 
-                const [productsRes, categoriesRes] = await Promise.all([
-                    api.get(`/api/products/search?${query.toString()}`),
-                    api.get('/api/categories')
-                ]);
-
+                const productsRes = await api.get(`/api/products/search?${query.toString()}`);
                 setProducts(productsRes.data);
-                setCategories(categoriesRes.data);
             } catch (err) {
-                console.error("Veri çekilirken hata oluştu:", err);
-                setError("Veriler yüklenemedi.");
+                console.error("Ürünler çekilirken hata oluştu:", err);
+                setError("Ürünler yüklenemedi.");
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchProductsAndCategories();
-    }, [urlSearchQuery, selectedCategoryIds.join(','), categories.length]);
+        fetchProducts();
+    }, [urlSearchQuery, selectedCategoryIds.join(',')]);
 
 
     const handleSearchInputChange = (value: string) => {
         setCurrentSearchInput(value);
     };
-
 
     const handleSearchSubmit = (value: string) => {
         const params = new URLSearchParams(searchParams);

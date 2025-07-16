@@ -11,12 +11,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter; // CorsConfiguration import'u
-import org.springframework.web.cors.CorsConfiguration; // CorsConfigurationSource import'u
-import org.springframework.web.cors.CorsConfigurationSource; // UrlBasedCorsConfigurationSource import'u
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.table.table.security.JwtAuthenticationFilter; // Arrays import'u
+import com.table.table.security.JwtAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
@@ -57,11 +57,30 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        // GEÇİCİ OLARAK TÜM İSTEKLERE İZİN VER (Test Amaçlı)
-                        .anyRequest().permitAll()) // <-- BU SATIRI DEĞİŞTİRİN
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+
+                        // 1️⃣ PUBLIC erişilebilen endpointler
+                        .requestMatchers(
+                                "/auth/**",
+                                "/products",
+                                "/products/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**")
+                        .permitAll()
+
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // 3️⃣ Authenticated (loginli) isteyen endpointler
+                        .requestMatchers("/api/cart/**").authenticated()
+                        .requestMatchers("/api/orders/my").authenticated()
+
+                        // 4️⃣ Diğer tüm istekler → auth zorunlu
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
 }

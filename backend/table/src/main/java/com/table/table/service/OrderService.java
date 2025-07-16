@@ -1,9 +1,11 @@
 package com.table.table.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.table.table.dto.request.OrderRequest;
 import com.table.table.model.Order;
 import com.table.table.model.User;
 import com.table.table.repository.OrderRepository;
@@ -20,28 +22,28 @@ public class OrderService {
         this.userRepository = userRepository;
     }
 
-    public Order createOrder(Long userId, String name,
-            String price, Integer quantity) {
-        User user = userRepository.findById(userId)
+    // Sipariş oluştur
+    public Order createOrder(String username, OrderRequest request) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Order order = new Order();
         order.setUser(user);
-        order.setName(name);
-        order.setPrice(new java.math.BigDecimal(price));
-        order.setQuantity(quantity);
+        order.setName(request.getName());
+        order.setPrice(new BigDecimal(request.getPrice()));
+        order.setQuantity(request.getQuantity());
 
         return orderRepository.save(order);
     }
 
-    // Kullanıcının siparişlerini getir
-    public List<Order> getOrdersByUser(Long userId) {
-        User user = userRepository.findById(userId)
+    // Kullanıcının siparişleri
+    public List<Order> getOrdersByUsername(String username) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return orderRepository.findByUser(user);
     }
 
-    // Tüm siparişleri getir (Admin)
+    // Admin için tüm siparişler
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }

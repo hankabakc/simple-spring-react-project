@@ -2,20 +2,11 @@ package com.table.table.dto.request;
 
 public class OrderRequest {
 
-    private Long userId;
     private String name;
     private String price;
     private Integer quantity;
 
-    // Getter Setter
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+    // Getter ve Setter
 
     public String getName() {
         return name;
