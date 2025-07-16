@@ -1,20 +1,13 @@
 package com.table.table.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.table.table.dto.request.ProductRequest;
 import com.table.table.dto.response.ProductResponse;
 import com.table.table.service.ProductService;
 
@@ -40,27 +33,32 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Map<String, Boolean>> createProduct(@ModelAttribute ProductRequest request) {
-        productService.createProduct(request);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("result", true);
-        return ResponseEntity.ok(response);
-    }
+    /*
+     * @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+     * public ResponseEntity<Map<String, Boolean>> createProduct(@ModelAttribute
+     * ProductRequest request) {
+     * productService.createProduct(request);
+     * Map<String, Boolean> response = new HashMap<>();
+     * response.put("result", true);
+     * return ResponseEntity.ok(response);
+     * }
+     */
 
-    @DeleteMapping
-    public ResponseEntity<Map<String, Boolean>> deleteProduct(@RequestParam Long id) {
-        productService.deleteProduct(id);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("result", true);
-        return ResponseEntity.ok(response);
-    }
+    /*
+     * @DeleteMapping
+     * public ResponseEntity<Map<String, Boolean>> deleteProduct(@RequestParam Long
+     * id) {
+     * productService.deleteProduct(id);
+     * Map<String, Boolean> response = new HashMap<>();
+     * response.put("result", true);
+     * return ResponseEntity.ok(response);
+     * }
+     */
 
-    // Ürün Arama ve Filtreleme Endpoint'i
     @GetMapping("/search")
     public ResponseEntity<List<ProductResponse>> searchProducts(
-            @RequestParam(required = false) String search, // Arama terimi (opsiyonel)
-            @RequestParam(required = false) List<Long> categoryIds) { // Kategori ID'leri listesi (opsiyonel)
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) List<Long> categoryIds) {
 
         List<ProductResponse> products = productService.searchProducts(search, categoryIds);
         return ResponseEntity.ok(products);

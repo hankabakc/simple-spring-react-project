@@ -69,7 +69,7 @@ public class ProductService {
     }
 
     @Transactional
-    public Product createProduct(ProductRequest request) {
+    public ProductResponse createProduct(ProductRequest request) {
         Product product = new Product();
         product.setName(request.getName());
         product.setPrice(request.getPrice());
@@ -77,7 +77,6 @@ public class ProductService {
 
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
-
         product.setCategory(category);
 
         MultipartFile image = request.getImage();
@@ -90,7 +89,8 @@ public class ProductService {
             }
         }
 
-        return productRepository.save(product);
+        Product saved = productRepository.save(product);
+        return convertResponse(saved);
     }
 
     public void deleteProduct(Long id) {
@@ -113,7 +113,6 @@ public class ProductService {
         } else if (hasCategoryIds) {
             products = productRepository.findByCategoryIdIn(categoryIds);
         } else {
-            // Hem arama terimi hem de kategori ID'leri boşsa, tüm ürünleri getir
             products = productRepository.findAll();
         }
 

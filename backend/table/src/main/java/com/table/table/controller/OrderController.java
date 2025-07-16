@@ -1,10 +1,11 @@
 package com.table.table.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,21 +26,22 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody OrderRequest request) {
-        Order created = orderService.createOrder(
-                request.getUserId(),
-                request.getName(),
-                request.getPrice(),
-                request.getQuantity());
+    public ResponseEntity<Order> createOrder(
+            @RequestBody OrderRequest request,
+            Principal principal) {
+
+        String username = principal.getName();
+        Order created = orderService.createOrder(username, request);
         return ResponseEntity.ok(created);
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Order>> getOrdersByUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(orderService.getOrdersByUser(userId));
+    @GetMapping("/my")
+    public ResponseEntity<List<Order>> getMyOrders(Principal principal) {
+        String username = principal.getName();
+        return ResponseEntity.ok(orderService.getOrdersByUsername(username));
     }
 
-    // Tüm siparişler (Admin)
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<Order>> getAllOrders() {
         return ResponseEntity.ok(orderService.getAllOrders());
