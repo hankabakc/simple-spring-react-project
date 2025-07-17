@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.table.table.dto.request.LoginRequest;
 import com.table.table.dto.request.RegisterRequest;
 import com.table.table.dto.response.LoginResponse;
+import com.table.table.model.User;
 import com.table.table.service.AuthService;
 
 @RestController
@@ -34,7 +35,13 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+        // Şifreyi doğrula ve token üret
         String token = authService.loginUser(request.getUsername(), request.getPassword());
-        return ResponseEntity.ok(new LoginResponse(token));
+
+        // Kullanıcıyı bul ve rolünü al
+        User user = authService.findByUsername(request.getUsername());
+        String role = user.getRole().getName();
+
+        return ResponseEntity.ok(new LoginResponse(token, role));
     }
 }
