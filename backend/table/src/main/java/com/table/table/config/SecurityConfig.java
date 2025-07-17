@@ -60,9 +60,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // OPTIONS isteklerine her zaman izin ver (CORS preflight için)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        // Herkese açık endpoint'ler
                         .requestMatchers(
                                 "/api/auth/register",
                                 "/api/auth/login",
