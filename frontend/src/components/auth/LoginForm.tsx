@@ -4,11 +4,12 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Stack, TextField, Button, Alert, CircularProgress } from '@mui/material';
 import { parseJwt } from '@/utils/auth';
+import { User } from '@/types/Type';
 
 export default function LoginForm({
     onLoginSuccess,
 }: {
-    onLoginSuccess: (user: { id: number; username: string; token: string }) => void;
+    onLoginSuccess: (user: User) => void;
 }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -25,13 +26,17 @@ export default function LoginForm({
                 username,
                 password,
             });
+
             const token = res.data.token;
+            const role = res.data.role;
+
             const payload = parseJwt(token);
 
             onLoginSuccess({
                 id: payload.id,
                 username: payload.username,
                 token,
+                role,
             });
         } catch (err: any) {
             console.error(err);
