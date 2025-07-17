@@ -32,6 +32,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
+        // PUBLIC ENDPOINT'LER İÇİN JWT KONTROLÜNÜ ATLA
+        // Burası daha önce eksikti!
+        if (request.getRequestURI().equals("/api/auth/register") ||
+                request.getRequestURI().equals("/api/auth/login") ||
+                request.getRequestURI().startsWith("/api/products") ||
+                request.getRequestURI().startsWith("/api/categories") ||
+                request.getRequestURI().startsWith("/swagger-ui") ||
+                request.getRequestURI().startsWith("/v3/api-docs") ||
+                request.getRequestURI().startsWith("/swagger-resources") ||
+                request.getRequestURI().startsWith("/webjars")) {
+            filterChain.doFilter(request, response);
+            return; // Filtre zincirini devam ettir ve buradan çık.
+        }
+
         String authHeader = request.getHeader("Authorization");
         String token = null;
 

@@ -37,7 +37,6 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
-    // Mevcut CORS yapılandırması (Spring Security için)
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -53,25 +52,6 @@ public class SecurityConfig {
         return source;
     }
 
-    // Yeni WebMvcConfigurer Bean'i (Spring MVC için CORS) - KALDIRILDI
-    // @Bean
-    // public WebMvcConfigurer corsConfigurer() {
-    // return new WebMvcConfigurer() {
-    // @Override
-    // public void void addCorsMappings(CorsRegistry registry) {
-    // registry.addMapping("/**") // Tüm yollar için CORS ayarları
-    // .allowedOrigins("http://localhost:3000",
-    // "https://simple-spring-react-project.onrender.com")
-    // .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-    // .allowedHeaders("Authorization", "Content-Type", "Accept") // İzin verilen
-    // başlıklar
-    // .exposedHeaders("Authorization")
-    // .allowCredentials(true)
-    // .maxAge(3600);
-    // }
-    // };
-    // }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -79,29 +59,32 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-
-                        // 1️⃣ PUBLIC erişilebilen endpointler
+                        // Herkese açık endpoint'ler
                         .requestMatchers(
-                                "/auth/**",
-                                "/api/auth/**",
-                                "/products",
-                                "/products/**",
+                                "/api/auth/register",
+                                "/api/auth/login",
+                                "/api/products",
                                 "/api/products/search",
-                                "/categories", // <-- BURAYI EKLEDİK!
-                                "/api/categories", // <-- BURAYI DA EKLEDİK (eğer /api ile başlıyorsa)
+                                "/api/products/detail", // Ürün detayı da herkese açık
+                                "/api/categories",
+                                "/api/categories/**", // Belirli bir kategoriye erişim
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
                                 "/webjars/**")
                         .permitAll()
 
+                        // Yalnızca ADMIN rolüne sahip kullanıcılar için endpoint'ler
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
-                        // 3️⃣ Authenticated (loginli) isteyen endpointler
-                        .requestMatchers("/api/cart/**").authenticated()
-                        .requestMatchers("/api/orders/my").authenticated()
+                        // Giriş yapmış tüm kullanıcılar için endpoint'ler
+                        .requestMatchers(
+                                "/api/cart/**", // Cart endpoint'lerinin hepsi
+                                "/api/orders", // Sipariş oluşturma
+                                "/api/orders/my") // Kendi siparişlerini görüntüleme
+                        .authenticated()
 
-                        // 4️⃣ Diğer tüm istekler → auth zorunlu
+                        // Diğer tüm istekler için (varsayılan olarak) giriş yapılmış olmalı
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
