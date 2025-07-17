@@ -5,12 +5,13 @@ import { Box, Paper, Typography, Button } from '@mui/material';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import LoginForm from '@/components/auth/LoginForm';
+import { User } from '@/types/Type';
 
 export default function LoginPage() {
     const { setUser } = useAuth();
     const router = useRouter();
 
-    const handleLoginSuccess = (user: { id: number; username: string; token: string }) => {
+    const handleLoginSuccess = (user: User) => {
         setUser(user);
         router.push('/products');
     };
