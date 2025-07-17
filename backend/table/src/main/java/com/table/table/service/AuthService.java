@@ -36,7 +36,7 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email is already taken");
         }
 
-        Role userRole = roleRepository.findByName("user")
+        Role userRole = roleRepository.findByName("USER")
                 .orElseThrow(() -> new RuntimeException("User rolune sahip degil"));
 
         User newUser = new User();

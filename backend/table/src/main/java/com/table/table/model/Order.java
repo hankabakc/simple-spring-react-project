@@ -35,22 +35,17 @@ public class Order {
     public Order() {
     }
 
-    public Order(Long id, User user, String name, BigDecimal price, Integer quantity) {
-        this.id = id;
+    public Order(User user, String name, BigDecimal price, Integer quantity) {
         this.user = user;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
     }
 
-    // Getter ve Setter'lar
+    // Getter & Setter
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public User getUser() {

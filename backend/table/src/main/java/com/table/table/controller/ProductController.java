@@ -63,4 +63,5 @@ public class ProductController {
         List<ProductResponse> products = productService.searchProducts(search, categoryIds);
         return ResponseEntity.ok(products);
     }
+
 }

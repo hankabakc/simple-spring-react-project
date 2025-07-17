@@ -8,21 +8,11 @@
     <changeSet id="xml-ins-1" author="han">
         <insert tableName="role">
             <column name="id" value="1"></column>
-            <column name="name" value="admin"></column>
+            <column name="name" value="ADMIN"></column>
         </insert>
         <insert tableName="role">
             <column name="id" value="2"></column>
-            <column name="name" value="user"></column>
-        </insert>
-    </changeSet>
-
-    <changeSet id="xml-ins-2" author="han">
-        <insert tableName="users">
-            <column name="id" value="1"></column>
-            <column name="email" value="admin@email.com"></column>
-            <column name="username" value="admin"></column>
-            <column name="role_id" value="1"></column>
-            <column name="password" value="1234"></column>
+            <column name="name" value="USER"></column>
         </insert>
     </changeSet>
 
@@ -61,25 +51,6 @@
 
     </changeSet>
 
-    <changeSet id="xml-ins-5" author="han">
-        <insert tableName="users">
-            <column name="id" value="2"></column>
-            <column name="email" value="abc@abc.com"></column>
-            <column name="username" value="admin"></column>
-            <column name="role_id" value="1"></column>
-            <column name="password" value="admin"></column>
-        </insert>
-    </changeSet>
-
-    <changeSet id="xml-ins-6" author="han">
-        <insert tableName="users">
-            <column name="id" value="3"></column>
-            <column name="email" value="han@gmail.com"></column>
-            <column name="username" value="han"></column>
-            <column name="role_id" value="2"></column>
-            <column name="password" value="han"></column>
-        </insert>
-    </changeSet>
 
     <changeSet id="xml-ins-7" author="han">
         <insert tableName="users">

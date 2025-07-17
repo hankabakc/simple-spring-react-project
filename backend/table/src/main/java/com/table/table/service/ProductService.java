@@ -120,4 +120,33 @@ public class ProductService {
                 .map(this::mapToProductResponse)
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public ProductResponse updateProduct(ProductRequest request) {
+        Product existing = productRepository.findById(request.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ürün bulunamadı"));
+
+        existing.setName(request.getName());
+        existing.setPrice(request.getPrice());
+        existing.setExplanation(request.getExplanation());
+
+        // Kategori güncelle
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Kategori bulunamadı"));
+        existing.setCategory(category);
+
+        // Görsel varsa güncelle (base64 encode)
+        MultipartFile image = request.getImage();
+        if (image != null && !image.isEmpty()) {
+            try {
+                String base64 = Base64.getEncoder().encodeToString(image.getBytes());
+                existing.setBase64Image(base64);
+            } catch (IOException e) {
+                throw new RuntimeException("Resim dönüştürme hatası", e);
+            }
+        }
+
+        Product saved = productRepository.save(existing);
+        return convertResponse(saved);
+    }
 }

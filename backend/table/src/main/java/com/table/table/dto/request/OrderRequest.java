@@ -1,12 +1,12 @@
 package com.table.table.dto.request;
 
+import java.math.BigDecimal;
+
 public class OrderRequest {
 
     private String name;
-    private String price;
+    private BigDecimal price;
     private Integer quantity;
-
-    // Getter ve Setter
 
     public String getName() {
         return name;
@@ -16,11 +16,11 @@ public class OrderRequest {
         this.name = name;
     }
 
-    public String getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
