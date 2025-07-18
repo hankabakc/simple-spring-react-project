@@ -3,13 +3,14 @@ package com.table.table.security;
 import java.io.IOException;
 
 import org.springframework.http.HttpMethod;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter; // HttpMethod'u import etmeyi unutmayın
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -29,18 +30,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        // --- BURADAKİ BLOKTA DEĞİŞİKLİK YAPILMALI ---
-        // OPTIONS isteklerini HER ZAMAN JWT kontrolünden muaf tut.
         if (HttpMethod.OPTIONS.matches(request.getMethod())) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // PUBLIC ENDPOINT'LER İÇİN JWT KONTROLÜNÜ ATLA (Mevcut mantık)
         if (request.getRequestURI().equals("/api/auth/register") ||
                 request.getRequestURI().equals("/api/auth/login") ||
                 request.getRequestURI().startsWith("/api/products") ||
@@ -52,7 +50,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        // --- DEĞİŞİKLİK SONU ---
 
         String authHeader = request.getHeader("Authorization");
         String token = null;
@@ -61,7 +58,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             token = authHeader.substring(7);
         }
 
-        // If a token exists and no authentication is currently set in the context
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
                 Claims claims = jwtUtil.parseClaims(token);
