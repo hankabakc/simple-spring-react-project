@@ -74,6 +74,21 @@ export default function AdminProductList() {
         } finally {
             setLoading(false);
         }
+        console.log("Gönderilen arama parametreleri:", {
+            search,
+            selectedCategoryIds
+        });
+
+        const params: { search?: string; categoryIds?: number[] } = {};
+
+        if (search) {
+            params.search = search;
+        }
+
+        if (selectedCategoryIds.length > 0) {
+            // 👇 güvenlik filtresi ekliyoruz
+            params.categoryIds = selectedCategoryIds.filter(id => typeof id === 'number');
+        }
     };
 
     const handleDelete = async (id: number) => {

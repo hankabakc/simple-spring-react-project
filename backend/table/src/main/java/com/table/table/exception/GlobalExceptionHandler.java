@@ -1,17 +1,16 @@
-// src/main/java/com/table/table/exception/GlobalExceptionHandler.java
 
 package com.table.table.exception;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map; // Spring Security yetkilendirme hatası
-import java.util.NoSuchElementException; // @Valid anotasyon hataları için
+import java.util.Map;
+import java.util.NoSuchElementException;
 
-import org.springframework.http.HttpStatus; // Eksik @RequestParam için
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingServletRequestParameterException; // Parametre tip uyuşmazlığı için
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -22,8 +21,6 @@ import com.table.table.dto.response.ErrorResponse;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Kullanıcı bulunamadı veya yetkilendirme hatası gibi özel durumlar için
-    // (401/403)
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
         ErrorResponse errorDetails = new ErrorResponse(
@@ -34,7 +31,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
     }
 
-    // Örneğin, belirli bir ID ile eleman bulunamadığında (404 Not Found)
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<ErrorResponse> handleNoSuchElementException(NoSuchElementException ex, WebRequest request) {
         ErrorResponse errorDetails = new ErrorResponse(
@@ -45,8 +41,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
-    // @RequestParam veya @PathVariable gibi yerlerde parametreler eksikse (400 Bad
-    // Request)
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorResponse> handleMissingParams(MissingServletRequestParameterException ex,
             WebRequest request) {
@@ -58,7 +52,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
-    // Parametre tipi uyuşmazlığı (örn: ID için string göndermek) (400 Bad Request)
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex,
             WebRequest request) {
@@ -70,7 +63,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
-    // @Valid anotasyonu ile yapılan validasyon hataları için (400 Bad Request)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, WebRequest request) {
         Map<String, String> errors = new HashMap<>();
