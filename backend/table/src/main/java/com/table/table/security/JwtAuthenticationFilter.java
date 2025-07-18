@@ -16,7 +16,7 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse; // BU SATIRI EKLEYİN!
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -30,9 +30,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request, // @NonNull EKLE
+            @NonNull HttpServletResponse response, // @NonNull EKLE
+            @NonNull FilterChain filterChain) throws ServletException, IOException { // @NonNull EKLE
 
         if (HttpMethod.OPTIONS.matches(request.getMethod())) {
             filterChain.doFilter(request, response);
