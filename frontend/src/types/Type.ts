@@ -52,3 +52,26 @@ export type AuthContextType = {
     logout: () => void;
     loading: boolean;
 };
+
+export interface OrderRequest {
+    name: string;
+    price: number;
+    quantity: number;
+}
+
+export interface OrderResponse {
+    id: number;
+    username: string;
+    productName: string;
+    price: number;
+    quantity: number;
+    totalPrice: number;
+}
+
+export interface CartItemResponse {
+    productId: number;
+    productName: string;
+    productImage: string;
+    productPrice: number;
+    quantity: number;
+}
