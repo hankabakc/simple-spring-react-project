@@ -105,7 +105,6 @@ export default function AdminProductList() {
                     className="w-64"
                 />
 
-                {/* TextField yerine FormControl ve Select bileşenlerini kullanıyoruz */}
                 <FormControl className="w-64">
                     <InputLabel id="category-select-label">Kategori Seç</InputLabel>
                     <Select
