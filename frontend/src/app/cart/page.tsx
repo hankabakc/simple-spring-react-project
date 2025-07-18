@@ -20,6 +20,7 @@ import LoginRequiredModal from '@/components/LoginRequeiredModal';
 import { useRouter } from 'next/navigation';
 import CartItemRow from '@/components/CartItemRow';
 import MessageBox from '@/components/MessageBox';
+import api from '@/services/api';
 
 
 export default function CartPage() {
@@ -67,6 +68,8 @@ export default function CartPage() {
         }
     };
 
+
+
     /*     const handleChangeQuantity = async (item: CartItem, delta: number) => {
             if (!user) {
                 setShowLoginModal(true);
@@ -99,6 +102,33 @@ export default function CartPage() {
         } catch (error) {
             console.error("Remove error:", error);
             showMessage("Error", "Could not remove item.");
+        }
+    };
+
+    const createOrder = async () => {
+        if (!user) {
+            setShowLoginModal(true);
+            return;
+        }
+
+        try {
+            for (const item of cartItems) {
+                const orderPayload = {
+                    name: item.productName,
+                    price: item.productPrice,
+                    quantity: item.quantity,
+                };
+                await api.post('/orders', orderPayload, {
+                    headers: { Authorization: `Bearer ${user.token}` },
+                });
+            }
+
+            await clearCart();
+            fetchCartItems();
+            showMessage("Success", "Order placed successfully!");
+        } catch (error) {
+            console.error("Order creation error:", error);
+            showMessage("Error", "Failed to place order.");
         }
     };
 
@@ -183,7 +213,7 @@ export default function CartPage() {
                                     variant="contained"
                                     color="primary"
                                     className="px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition duration-300 ease-in-out shadow-md"
-                                    onClick={() => showMessage("Payment", "Redirecting to payment page...")}
+                                    onClick={createOrder}
                                 >
                                     Checkout
                                 </Button>
