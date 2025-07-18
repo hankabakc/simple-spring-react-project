@@ -5,11 +5,12 @@ import { User } from '@/types/Type'; // User tipini import etmeyi unutma
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const api = axios.create({
-    baseURL: '/api', // 🌟 artık rewrites ile 3000'den 8080'e yönlendirilecek
+    baseURL: API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
     },
 });
+
 
 api.interceptors.request.use(
     (config) => {
