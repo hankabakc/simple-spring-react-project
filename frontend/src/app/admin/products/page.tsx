@@ -56,15 +56,11 @@ export default function AdminProductList() {
     const handleSearch = async () => {
         setLoading(true);
         try {
-            const params: { search?: string; categoryIds?: number[] | string } = {};
+            const params: { search?: string; categoryIds?: string } = {};
 
-            if (search) {
-                params.search = search;
-            }
-
+            if (search) params.search = search;
             if (selectedCategoryIds.length > 0) {
-                params.categoryIds = selectedCategoryIds;
-
+                params.categoryIds = selectedCategoryIds.join(',');
             }
 
             const res = await api.get<Product[]>('/api/admin/products/search', { params });
@@ -86,7 +82,6 @@ export default function AdminProductList() {
         }
 
         if (selectedCategoryIds.length > 0) {
-            // 👇 güvenlik filtresi ekliyoruz
             params.categoryIds = selectedCategoryIds.filter(id => typeof id === 'number');
         }
     };
