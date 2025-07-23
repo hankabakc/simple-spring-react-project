@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 public class OrderResponse {
 
     private Long id;
+    private Long orderId; // orderGroupId buraya yansıtıldı
     private String username;
     private String productName;
     private BigDecimal price;
@@ -14,8 +15,10 @@ public class OrderResponse {
     public OrderResponse() {
     }
 
-    public OrderResponse(Long id, String username, String productName, BigDecimal price, Integer quantity) {
+    public OrderResponse(Long id, Long orderId, String username, String productName, BigDecimal price,
+            Integer quantity) {
         this.id = id;
+        this.orderId = orderId;
         this.username = username;
         this.productName = productName;
         this.price = price;
@@ -31,6 +34,14 @@ public class OrderResponse {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 
     public String getUsername() {

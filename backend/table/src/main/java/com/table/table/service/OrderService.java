@@ -29,6 +29,7 @@ public class OrderService {
     public OrderResponse toResponse(Order order) {
         return new OrderResponse(
                 order.getId(),
+                order.getOrderGroupId(),
                 order.getUser().getUsername(),
                 order.getName(),
                 order.getPrice(),
@@ -44,6 +45,7 @@ public class OrderService {
         order.setName(request.getName());
         order.setPrice(request.getPrice());
         order.setQuantity(request.getQuantity());
+        order.setOrderGroupId(System.currentTimeMillis());
 
         return toResponse(orderRepository.save(order));
     }

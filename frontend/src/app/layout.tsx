@@ -25,8 +25,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // GEÇİCİ OLARAK TEST İÇİN 'dark' sınıfını ekleyebilirsiniz.
-    // Kullanıcıya tema değiştirme seçeneği sunulduğunda bu dinamik olarak yönetilmelidir.
     <html lang="en" suppressHydrationWarning className="dark">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

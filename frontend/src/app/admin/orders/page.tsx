@@ -18,12 +18,12 @@ export default function AdminOrdersPage() {
     });
 
     const fetchOrders = async () => {
-        const response = await api.get('/admin/orders');
+        const response = await api.get('/api/admin/orders');
         setOrders(response.data);
     };
 
     const searchOrders = async () => {
-        const response = await api.get('/admin/orders/search', {
+        const response = await api.get('/api/admin/orders/search', {
             params: {
                 username: filters.username || undefined,
                 productName: filters.productName || undefined,
@@ -35,7 +35,7 @@ export default function AdminOrdersPage() {
     };
 
     const deleteOrder = async (id: number) => {
-        await api.delete(`/admin/orders/${id}`);
+        await api.delete(`/api/admin/orders/${id}`);
         fetchOrders();
     };
 

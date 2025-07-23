@@ -2,108 +2,76 @@
 
 import { useEffect, useState } from 'react';
 import api from '@/services/api';
-import { OrderRequest, OrderResponse, CartItemResponse } from '@/types/Type';
+import { OrderResponse } from '@/types/Type';
 import {
-    Table, TableHead, TableRow, TableCell, TableBody,
-    Button, Snackbar, Alert, Typography
+    Typography, Snackbar, Alert, Collapse, Divider
 } from '@mui/material';
+import { ExpandMore, ExpandLess } from '@mui/icons-material';
 
 export default function OrdersPage() {
-    const [cartItems, setCartItems] = useState<CartItemResponse[]>([]);
-    const [orders, setOrders] = useState<OrderResponse[]>([]);
+    const [orders, setOrders] = useState<OrderResponse[][]>([]);
+    const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
     const [successOpen, setSuccessOpen] = useState(false);
 
-    const fetchCart = async () => {
-        const response = await api.get('/cart');
-        setCartItems(response.data);
-    };
-
     const fetchOrders = async () => {
-        const response = await api.get('/orders/my');
-        setOrders(response.data);
-    };
+        const response = await api.get('/api/orders/my');
 
-    const createOrder = async () => {
-        for (const item of cartItems) {
-            const request: OrderRequest = {
-                name: item.productName,
-                price: item.productPrice,
-                quantity: item.quantity,
-            };
-            await api.post('/orders', request);
+        // Siparişleri grupluyoruz: Aynı order.id olanlar bir gruba
+        const grouped: Record<number, OrderResponse[]> = {};
+        for (const item of response.data) {
+            if (!grouped[item.orderId]) grouped[item.orderId] = [];
+            grouped[item.orderId].push(item);
         }
-
-        await api.delete('/cart');
-        setCartItems([]);
-        setSuccessOpen(true);
-        fetchOrders();
+        setOrders(Object.values(grouped));
     };
 
     useEffect(() => {
-        fetchCart();
         fetchOrders();
     }, []);
 
+    const toggleOrder = (orderId: number) => {
+        setExpandedOrderId(prev => (prev === orderId ? null : orderId));
+    };
+
     return (
-        <div className="p-6 space-y-8">
-            <Typography variant="h5">🛒 Sepetteki Ürünler</Typography>
-
-            {cartItems.length === 0 ? (
-                <p>Sepetiniz boş.</p>
-            ) : (
-                <>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Ürün</TableCell>
-                                <TableCell>Adet</TableCell>
-                                <TableCell>Fiyat</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {cartItems.map((item) => (
-                                <TableRow key={item.productId}>
-                                    <TableCell>{item.productName}</TableCell>
-                                    <TableCell>{item.quantity}</TableCell>
-                                    <TableCell>{item.productPrice} ₺</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-
-                    <Button variant="contained" onClick={createOrder} className="mt-4">
-                        Siparişi Tamamla
-                    </Button>
-                </>
-            )}
-
-            <Typography variant="h5" className="mt-10">🧾 Sipariş Geçmişi</Typography>
+        <div className="p-6 space-y-6">
+            <Typography variant="h5">🧾 Sipariş Geçmişi</Typography>
 
             {orders.length === 0 ? (
                 <p>Henüz siparişiniz yok.</p>
             ) : (
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Ürün</TableCell>
-                            <TableCell>Adet</TableCell>
-                            <TableCell>Fiyat</TableCell>
-                            <TableCell>Toplam</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {orders.map(order => (
-                            <TableRow key={order.id}>
-                                <TableCell>{order.id}</TableCell>
-                                <TableCell>{order.productName}</TableCell>
-                                <TableCell>{order.quantity}</TableCell>
-                                <TableCell>{order.price} ₺</TableCell>
-                                <TableCell>{order.totalPrice} ₺</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                orders.map((orderGroup) => {
+                    const orderId = orderGroup[0].orderId;
+                    const isOpen = expandedOrderId === orderId;
+
+                    return (
+                        <div
+                            key={orderId}
+                            className="border rounded-lg p-4 shadow hover:bg-gray-50 cursor-pointer transition"
+                            onClick={() => toggleOrder(orderId)}
+                        >
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="font-semibold">Sipariş ID: {orderId}</p>
+                                    <p className="text-sm text-gray-500">Ürün Sayısı: {orderGroup.length}</p>
+                                </div>
+                                {isOpen ? <ExpandLess /> : <ExpandMore />}
+                            </div>
+
+                            <Collapse in={isOpen}>
+                                <Divider className="my-3" />
+                                <div className="space-y-2">
+                                    {orderGroup.map((item, idx) => (
+                                        <div key={idx} className="flex justify-between text-sm">
+                                            <span>{item.productName} × {item.quantity}</span>
+                                            <span>{item.totalPrice} ₺</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Collapse>
+                        </div>
+                    );
+                })
             )}
 
             <Snackbar

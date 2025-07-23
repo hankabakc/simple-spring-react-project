@@ -32,17 +32,19 @@ public class Order {
     @Column(nullable = false)
     private Integer quantity;
 
+    @Column(name = "order_group_id")
+    private Long orderGroupId;
+
     public Order() {
     }
 
-    public Order(User user, String name, BigDecimal price, Integer quantity) {
+    public Order(User user, String name, BigDecimal price, Integer quantity, Long orderGroupId) {
         this.user = user;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
+        this.orderGroupId = orderGroupId;
     }
-
-    // Getter & Setter
 
     public Long getId() {
         return id;
@@ -78,5 +80,13 @@ public class Order {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public Long getOrderGroupId() {
+        return orderGroupId;
+    }
+
+    public void setOrderGroupId(Long orderGroupId) {
+        this.orderGroupId = orderGroupId;
     }
 }

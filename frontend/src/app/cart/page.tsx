@@ -116,19 +116,30 @@ export default function CartPage() {
                 const orderPayload = {
                     name: item.productName,
                     price: item.productPrice,
-                    quantity: item.quantity,
+                    quantity: item.quantity
                 };
-                await api.post('/orders', orderPayload, {
+                await api.post('/api/orders', orderPayload, {
                     headers: { Authorization: `Bearer ${user.token}` },
                 });
             }
 
+
             await clearCart();
             fetchCartItems();
             showMessage("Success", "Order placed successfully!");
+
         } catch (error) {
             console.error("Order creation error:", error);
-            showMessage("Error", "Failed to place order.");
+            let errorMessage = "Failed to place order.";
+
+            if (error && typeof error === 'object' && 'response' in error) {
+                const axiosError = error as any;
+                errorMessage = axiosError.response?.data?.message ||
+                    axiosError.response?.data ||
+                    "Failed to place order.";
+            }
+
+            showMessage("Error", errorMessage);
         }
     };
 
