@@ -59,8 +59,9 @@ export interface OrderRequest {
     quantity: number;
 }
 
-export interface OrderResponse {
+export type OrderResponse = {
     id: number;
+    orderId: number;
     username: string;
     productName: string;
     price: number;
@@ -68,7 +69,7 @@ export interface OrderResponse {
     totalPrice: number;
 }
 
-export interface CartItemResponse {
+export type CartItemResponse = {
     productId: number;
     productName: string;
     productImage: string;

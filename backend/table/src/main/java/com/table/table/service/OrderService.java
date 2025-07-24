@@ -6,12 +6,15 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.table.table.dto.request.OrderRequest;
 import com.table.table.dto.response.OrderResponse;
+import com.table.table.model.CartItem;
 import com.table.table.model.Order;
 import com.table.table.model.User;
+import com.table.table.repository.CartItemRepository;
 import com.table.table.repository.OrderRepository;
 import com.table.table.repository.UserRepository;
 
@@ -20,10 +23,13 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final CartItemRepository cartItemRepository;
 
-    public OrderService(OrderRepository orderRepository, UserRepository userRepository) {
+    public OrderService(OrderRepository orderRepository, UserRepository userRepository,
+            CartItemRepository cartItemRepository) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
+        this.cartItemRepository = cartItemRepository;
     }
 
     public OrderResponse toResponse(Order order) {
@@ -36,6 +42,7 @@ public class OrderService {
                 order.getQuantity());
     }
 
+    // Tekli sipariş oluşturma (manuel kullanım için hâlâ dursun)
     public OrderResponse createOrder(String username, OrderRequest request) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
@@ -48,6 +55,34 @@ public class OrderService {
         order.setOrderGroupId(System.currentTimeMillis());
 
         return toResponse(orderRepository.save(order));
+    }
+
+    @Transactional
+    public List<OrderResponse> createOrdersFromCart(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        List<CartItem> cartItems = cartItemRepository.findByUserId(user.getId());
+        if (cartItems.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sepet boş");
+        }
+
+        long groupId = System.currentTimeMillis();
+
+        List<Order> orders = cartItems.stream().map(item -> {
+            Order order = new Order();
+            order.setUser(user);
+            order.setName(item.getProduct().getName());
+            order.setPrice(item.getProduct().getPrice());
+            order.setQuantity(item.getQuantity());
+            order.setOrderGroupId(groupId);
+            return order;
+        }).toList();
+
+        List<Order> saved = orderRepository.saveAll(orders);
+        cartItemRepository.deleteAll(cartItems);
+
+        return saved.stream().map(this::toResponse).toList();
     }
 
     public List<OrderResponse> getOrdersByUsername(String username) {
