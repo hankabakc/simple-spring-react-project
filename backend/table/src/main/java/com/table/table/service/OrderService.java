@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.table.table.dto.request.OrderRequest;
 import com.table.table.dto.response.OrderResponse;
 import com.table.table.model.CartItem;
 import com.table.table.model.Order;
@@ -42,20 +41,22 @@ public class OrderService {
                 order.getQuantity());
     }
 
-    // Tekli sipariş oluşturma (manuel kullanım için hâlâ dursun)
-    public OrderResponse createOrder(String username, OrderRequest request) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
-        Order order = new Order();
-        order.setUser(user);
-        order.setName(request.getName());
-        order.setPrice(request.getPrice());
-        order.setQuantity(request.getQuantity());
-        order.setOrderGroupId(System.currentTimeMillis());
-
-        return toResponse(orderRepository.save(order));
-    }
+    /*
+     * public OrderResponse createOrder(String username, OrderRequest request) {
+     * User user = userRepository.findByUsername(username)
+     * .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+     * "User not found"));
+     * 
+     * Order order = new Order();
+     * order.setUser(user);
+     * order.setName(request.getName());
+     * order.setPrice(request.getPrice());
+     * order.setQuantity(request.getQuantity());
+     * order.setOrderGroupId(System.currentTimeMillis());
+     * 
+     * return toResponse(orderRepository.save(order));
+     * }
+     */
 
     @Transactional
     public List<OrderResponse> createOrdersFromCart(String username) {

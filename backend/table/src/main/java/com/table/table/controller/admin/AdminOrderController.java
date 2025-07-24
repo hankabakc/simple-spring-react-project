@@ -40,6 +40,14 @@ public class AdminOrderController {
         return ResponseEntity.ok(orderService.searchOrders(username, productName, minPrice, maxPrice));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable Long id) {
+        return orderService.getOrderById(id)
+                .map(orderService::toResponse)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
         orderService.deleteOrderById(id);
