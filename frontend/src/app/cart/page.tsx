@@ -112,17 +112,15 @@ export default function CartPage() {
         }
 
         try {
-            for (const item of cartItems) {
-                const orderPayload = {
-                    name: item.productName,
-                    price: item.productPrice,
-                    quantity: item.quantity
-                };
-                await api.post('/api/orders', orderPayload, {
-                    headers: { Authorization: `Bearer ${user.token}` },
-                });
-            }
+            const orderPayload = cartItems.map(item => ({
+                name: item.productName,
+                price: item.productPrice,
+                quantity: item.quantity,
+            }));
 
+            await api.post('/api/orders', orderPayload, {
+                headers: { Authorization: `Bearer ${user.token}` },
+            });
 
             await clearCart();
             fetchCartItems();

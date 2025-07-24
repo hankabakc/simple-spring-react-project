@@ -1,5 +1,3 @@
-// src/components/Navbar.tsx
-
 'use client';
 
 import {
@@ -11,19 +9,20 @@ import {
     Box,
     Typography,
     Divider,
+    IconButton,
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import Link from 'next/link';
 import { useAuth } from "@/context/AuthContext";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import LoginRequiredModal from "@/components/LoginRequeiredModal";
-// NavbarProps tipinizi güncelleyeceğiz
 import { NavbarProps } from '@/types/Type';
 import { useCartContext } from '@/context/CartContext';
 
-export default function Navbar({ search, onSearchChange, onSearchSubmit }: NavbarProps) { // DEĞİŞİKLİK: onSearchSubmit eklendi
+export default function Navbar({ search, onSearchChange, onSearchSubmit }: NavbarProps) {
     const { user, logout } = useAuth();
     const [showCart, setShowCart] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
@@ -35,7 +34,6 @@ export default function Navbar({ search, onSearchChange, onSearchSubmit }: Navba
             setShowLoginModal(true);
             return;
         }
-
         await refreshCart();
         setShowCart(!showCart);
     };
@@ -49,11 +47,18 @@ export default function Navbar({ search, onSearchChange, onSearchSubmit }: Navba
         }
     };
 
-    // YENİ: TextField içinde Enter tuşuna basıldığında çağrılacak fonksiyon
     const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
-            onSearchSubmit(search); // ProductsPage'e arama terimini gönder
+            onSearchSubmit(search);
         }
+    };
+
+    const goToOrders = () => {
+        if (!user) {
+            setShowLoginModal(true);
+            return;
+        }
+        router.push('/orders');
     };
 
     return (
@@ -76,19 +81,28 @@ export default function Navbar({ search, onSearchChange, onSearchSubmit }: Navba
                         />
                     </Box>
                     <ButtonGroup variant="text" className="space-x-2">
+                        {user && (
+                            <Button
+                                startIcon={<ReceiptLongIcon />}
+                                className="navbar-button"
+                                onClick={goToOrders}
+                            >
+                                Orders
+                            </Button>
+                        )}
+                        <Button
+                            startIcon={<ShoppingCartIcon />}
+                            className="navbar-button"
+                            onClick={handleCartClick}
+                        >
+                            Cart
+                        </Button>
                         <Button
                             startIcon={<PersonIcon />}
                             onClick={handleUserClick}
                             className="navbar-button"
                         >
                             {user ? 'Logout' : 'Login'}
-                        </Button>
-                        <Button
-                            startIcon={<ShoppingCartIcon />}
-                            className="navbar-button"
-                            onClick={handleCartClick}
-                        >
-                            Sepet
                         </Button>
                     </ButtonGroup>
                 </Toolbar>
