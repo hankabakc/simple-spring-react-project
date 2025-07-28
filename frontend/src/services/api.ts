@@ -18,33 +18,33 @@ api.interceptors.request.use(
             try {
                 const user: User = JSON.parse(userString);
 
-                // Log: user objesi nasıl görünüyor?
-                console.log("🔐 Parsed User from localStorage:", user);
+
+                console.log(" Parsed User from localStorage:", user);
 
                 if (user && user.token) {
                     config.headers.Authorization = `Bearer ${user.token}`;
 
-                    // Log: Header’a token eklenmiş mi?
-                    console.log("✅ TOKEN HEADER EKLENDİ:", config.headers.Authorization);
+
+                    console.log("TOKEN HEADER ADDED:", config.headers.Authorization);
                 } else {
-                    console.warn("⚠️ Token bulunamadı! user.token yok.");
+                    console.warn(" Token not found! user.token is missing.");
                 }
 
             } catch (error) {
-                console.error("❌ localStorage'dan user parse edilemedi:", error);
+                console.error(" Failed to parse user from localStorage:", error);
 
                 if (typeof window !== 'undefined') {
                     localStorage.removeItem('user');
                 }
             }
         } else {
-            console.warn("⚠️ localStorage.getItem('user') null döndü!");
+            console.warn(" localStorage.getItem('user') returned null!");
         }
 
         return config;
     },
     (error) => {
-        console.error("❌ Axios interceptor hatası:", error);
+        console.error(" Axios interceptor error:", error);
         return Promise.reject(error);
     }
 );

@@ -76,3 +76,29 @@ export type CartItemResponse = {
     productPrice: number;
     quantity: number;
 }
+
+export type ProductFormProps = {
+    initialValues?: {
+        name: string;
+        price: number;
+        explanation: string;
+        categoryId: number;
+    };
+    onSubmit: (formData: FormData) => Promise<void>;
+    categories: Category[];
+    loading: boolean;
+    error?: string | null;
+    submitLabel?: string;
+}
+export type RegisterFormProps = {
+    onRegisterSuccess: () => void;
+}
+export type LoginFormProps = {
+    onLoginSuccess: (userData: any) => void;
+};
+
+export type CartContextType = {
+    cartItems: CartItem[];
+    refreshCart: () => Promise<void>;
+    addToCartAndRefresh: (productId: number, quantity: number) => Promise<void>;
+};

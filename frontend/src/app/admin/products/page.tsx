@@ -1,133 +1,112 @@
-// components/AdminProductList.tsx
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import api from '@/services/api';
-import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import {
     Box,
-    Stack,
-    Table,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableBody,
-    Paper,
-    TableContainer,
     Typography,
-    Avatar,
-    CircularProgress,
     TextField,
     MenuItem,
     Button,
-    InputLabel,
     FormControl,
+    InputLabel,
     Select,
+    Avatar,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    CircularProgress
 } from '@mui/material';
+import Link from 'next/link';
 import { Product, Category } from '@/types/Type';
+import {
+    fetchAllProducts,
+    searchProducts,
+    deleteProductById
+} from '@/services/productService';
+import { fetchAllCategories } from '@/services/categoryService';
 
 export default function AdminProductList() {
     const [products, setProducts] = useState<Product[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [search, setSearch] = useState('');
     const [categories, setCategories] = useState<Category[]>([]);
     const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
+    const [search, setSearch] = useState('');
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchProductsAndCategories = async () => {
+        const fetchData = async () => {
             setLoading(true);
             try {
                 const [productsRes, categoriesRes] = await Promise.all([
-                    api.get<Product[]>('/api/admin/products'),
-                    api.get<Category[]>('/api/categories'),
+                    fetchAllProducts(),
+                    fetchAllCategories()
                 ]);
-                setProducts(productsRes.data);
-                setCategories(categoriesRes.data);
+                setProducts(productsRes);
+                setCategories(categoriesRes);
             } catch (error) {
-                console.error('Veriler alınamadı:', error);
+                console.error('Failed to fetch data:', error);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchProductsAndCategories();
+        fetchData();
     }, []);
 
     const handleSearch = async () => {
         setLoading(true);
         try {
             const params: { search?: string; categoryIds?: string } = {};
-
             if (search) params.search = search;
             if (selectedCategoryIds.length > 0) {
                 params.categoryIds = selectedCategoryIds.join(',');
             }
 
-            const res = await api.get<Product[]>('/api/admin/products/search', { params });
-            setProducts(res.data);
+            const result = await searchProducts(params);
+            setProducts(result);
         } catch (err) {
-            console.error('Arama veya filtreleme hatası:', err);
+            console.error('Search or filter error:', err);
         } finally {
             setLoading(false);
-        }
-        console.log("Gönderilen arama parametreleri:", {
-            search,
-            selectedCategoryIds
-        });
-
-        const params: { search?: string; categoryIds?: number[] } = {};
-
-        if (search) {
-            params.search = search;
-        }
-
-        if (selectedCategoryIds.length > 0) {
-            params.categoryIds = selectedCategoryIds.filter(id => typeof id === 'number');
         }
     };
 
     const handleDelete = async (id: number) => {
-        const confirmed = confirm('Bu ürünü silmek istediğine emin misin?');
+        const confirmed = confirm('Are you sure you want to delete this product?');
         if (!confirmed) return;
 
         try {
-            await api.delete(`/api/admin/products`, {
-                params: { id },
-            });
+            await deleteProductById(id);
             setProducts((prev) => prev.filter((p) => p.id !== id));
         } catch (error) {
-            console.error('Silme işlemi başarısız:', error);
-            alert('Ürün silinemedi.');
+            console.error('Delete failed:', error);
+            alert('Product could not be deleted.');
         }
     };
 
     return (
-        <Box p={8}>
-            <Typography variant="h5" mb={4} fontWeight="bold">
-                Ürün Listesi
+        <Box className="p-8">
+            <Typography variant="h5" className="font-bold mb-6">
+                Product List
             </Typography>
 
-            <Stack direction="row" spacing={2} mb={6} className="items-center">
+            <Box className="flex flex-wrap items-center gap-4 mb-8">
                 <TextField
-                    label="Ürün Ara"
+                    label="Search Product"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="w-64"
                 />
-
-
                 <FormControl className="w-64">
-                    <InputLabel id="category-select-label">Kategori Seç</InputLabel>
+                    <InputLabel id="category-select-label">Select Category</InputLabel>
                     <Select
                         labelId="category-select-label"
-                        id="category-select"
                         multiple
                         value={selectedCategoryIds}
-                        onChange={(e) => {
-                            const value = e.target.value;
-                            setSelectedCategoryIds(value as unknown as number[]);
-                        }}
-                        variant="outlined"
+                        onChange={(e) => setSelectedCategoryIds(e.target.value as number[])}
                     >
                         {categories.map((cat) => (
                             <MenuItem key={cat.id} value={cat.id}>
@@ -136,42 +115,37 @@ export default function AdminProductList() {
                         ))}
                     </Select>
                 </FormControl>
-
                 <Button variant="contained" onClick={handleSearch}>
-                    Ara
+                    Search
                 </Button>
-                <Button
-                    variant="outlined"
-                    component={Link}
-                    href="/admin/products/add"
-                >
-                    Yeni Ürün Ekle
-                </Button>
-            </Stack>
+                <Link href="/admin/products/add">
+                    <Button variant="outlined">Add New Product</Button>
+                </Link>
+            </Box>
 
             {loading ? (
-                <Box className="flex justify-center items-center h-40">
+                <div className="flex justify-center items-center h-40">
                     <CircularProgress />
-                </Box>
+                </div>
             ) : (
                 <TableContainer component={Paper} className="shadow-md rounded-lg">
                     <Table>
                         <TableHead className="bg-gray-100">
                             <TableRow>
                                 <TableCell><strong>ID</strong></TableCell>
-                                <TableCell><strong>İsim</strong></TableCell>
-                                <TableCell><strong>Açıklama</strong></TableCell>
-                                <TableCell><strong>Fiyat</strong></TableCell>
-                                <TableCell><strong>Kategori</strong></TableCell>
-                                <TableCell><strong>Resim</strong></TableCell>
-                                <TableCell><strong>İşlemler</strong></TableCell>
+                                <TableCell><strong>Name</strong></TableCell>
+                                <TableCell><strong>Description</strong></TableCell>
+                                <TableCell><strong>Price</strong></TableCell>
+                                <TableCell><strong>Category</strong></TableCell>
+                                <TableCell><strong>Image</strong></TableCell>
+                                <TableCell><strong>Actions</strong></TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {products.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={7} className="text-center">
-                                        Hiç ürün bulunamadı.
+                                        No products found.
                                     </TableCell>
                                 </TableRow>
                             ) : (
@@ -194,13 +168,13 @@ export default function AdminProductList() {
                                                 href={`/admin/products/edit?id=${product.id}`}
                                                 className="text-blue-600 hover:text-blue-800 font-semibold transition mr-4"
                                             >
-                                                Düzenle
+                                                Edit
                                             </Link>
                                             <button
                                                 onClick={() => handleDelete(product.id)}
                                                 className="text-red-600 hover:text-red-800 font-semibold transition"
                                             >
-                                                Sil
+                                                Delete
                                             </button>
                                         </TableCell>
                                     </TableRow>

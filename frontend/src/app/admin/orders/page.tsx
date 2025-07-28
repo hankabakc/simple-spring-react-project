@@ -1,15 +1,28 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import api from '@/services/api'; // senin verdiğin api.ts dosyasındaki Axios örneği
+import api from '@/services/api';
 import { OrderResponse } from '@/types/Type';
 import {
-    Table, TableHead, TableRow, TableCell, TableBody, IconButton, TextField, Button
+    Typography,
+    TextField,
+    Button,
+    Paper,
+    Box,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody,
+    IconButton,
+    Divider
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import Navbar from '@/components/Navbar';
+import { groupOrders } from '@/utils/orderUtils';
 
 export default function AdminOrdersPage() {
-    const [orders, setOrders] = useState<OrderResponse[]>([]);
+    const [ordersGrouped, setOrdersGrouped] = useState<Record<number, OrderResponse[]>>({});
     const [filters, setFilters] = useState({
         username: '',
         productName: '',
@@ -19,7 +32,8 @@ export default function AdminOrdersPage() {
 
     const fetchOrders = async () => {
         const response = await api.get('/api/admin/orders');
-        setOrders(response.data);
+        const grouped = groupOrders(response.data);
+        setOrdersGrouped(grouped);
     };
 
     const searchOrders = async () => {
@@ -31,11 +45,12 @@ export default function AdminOrdersPage() {
                 maxPrice: filters.maxPrice || undefined,
             },
         });
-        setOrders(response.data);
+        const grouped = groupOrders(response.data);
+        setOrdersGrouped(grouped);
     };
 
-    const deleteOrder = async (id: number) => {
-        await api.delete(`/api/admin/orders/${id}`);
+    const deleteOrderGroup = async (orderId: number) => {
+        await api.delete(`/api/admin/orders/group/${orderId}`);
         fetchOrders();
     };
 
@@ -43,49 +58,95 @@ export default function AdminOrdersPage() {
         fetchOrders();
     }, []);
 
+    const search = '';
+    const noop = () => { };
+
     return (
-        <div className="p-4">
-            <h2 className="text-xl font-bold mb-4">Tüm Siparişler</h2>
+        <>
+            <Navbar search={search} onSearchChange={noop} onSearchSubmit={noop} />
+            <Box className="p-6 space-y-6">
+                <Typography variant="h5" className="font-bold">
+                    Order Management
+                </Typography>
 
-            <div className="grid grid-cols-4 gap-4 mb-4">
-                <TextField label="Kullanıcı Adı" value={filters.username} onChange={e => setFilters(f => ({ ...f, username: e.target.value }))} />
-                <TextField label="Ürün Adı" value={filters.productName} onChange={e => setFilters(f => ({ ...f, productName: e.target.value }))} />
-                <TextField label="Min Fiyat" type="number" value={filters.minPrice} onChange={e => setFilters(f => ({ ...f, minPrice: e.target.value }))} />
-                <TextField label="Max Fiyat" type="number" value={filters.maxPrice} onChange={e => setFilters(f => ({ ...f, maxPrice: e.target.value }))} />
-            </div>
+                <Box className="flex flex-wrap gap-4 mb-4">
+                    <TextField
+                        label="Username"
+                        value={filters.username}
+                        onChange={(e) => setFilters((f) => ({ ...f, username: e.target.value }))}
+                        className="w-full sm:w-[200px]"
+                    />
+                    <TextField
+                        label="Product Name"
+                        value={filters.productName}
+                        onChange={(e) => setFilters((f) => ({ ...f, productName: e.target.value }))}
+                        className="w-full sm:w-[200px]"
+                    />
+                    <TextField
+                        label="Min Price"
+                        type="number"
+                        value={filters.minPrice}
+                        onChange={(e) => setFilters((f) => ({ ...f, minPrice: e.target.value }))}
+                        className="w-full sm:w-[150px]"
+                    />
+                    <TextField
+                        label="Max Price"
+                        type="number"
+                        value={filters.maxPrice}
+                        onChange={(e) => setFilters((f) => ({ ...f, maxPrice: e.target.value }))}
+                        className="w-full sm:w-[150px]"
+                    />
+                    <Button variant="contained" onClick={searchOrders} className="h-[56px]">
+                        Search
+                    </Button>
+                </Box>
 
-            <Button variant="contained" onClick={searchOrders} className="mb-4">Ara</Button>
-
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>ID</TableCell>
-                        <TableCell>Kullanıcı</TableCell>
-                        <TableCell>Ürün</TableCell>
-                        <TableCell>Adet</TableCell>
-                        <TableCell>Fiyat</TableCell>
-                        <TableCell>Toplam</TableCell>
-                        <TableCell>Aksiyon</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {orders.map(order => (
-                        <TableRow key={order.id}>
-                            <TableCell>{order.id}</TableCell>
-                            <TableCell>{order.username}</TableCell>
-                            <TableCell>{order.productName}</TableCell>
-                            <TableCell>{order.quantity}</TableCell>
-                            <TableCell>{order.price}</TableCell>
-                            <TableCell>{order.totalPrice}</TableCell>
-                            <TableCell>
-                                <IconButton onClick={() => deleteOrder(order.id)}>
+                {Object.keys(ordersGrouped).length === 0 ? (
+                    <Typography variant="body1" className="mt-6 text-gray-500">
+                        No orders found yet.
+                    </Typography>
+                ) : (
+                    Object.entries(ordersGrouped).map(([orderId, orderGroup]) => (
+                        <Paper key={orderId} className="p-4 mb-6 shadow-md">
+                            <Box className="flex justify-between items-center mb-2">
+                                <Typography variant="subtitle1" className="font-semibold">
+                                    Order ID: {orderId} — User: {orderGroup[0].username}
+                                </Typography>
+                                <IconButton color="error" onClick={() => deleteOrderGroup(Number(orderId))}>
                                     <DeleteIcon />
                                 </IconButton>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </div>
+                            </Box>
+
+                            <Table size="small">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Product</TableCell>
+                                        <TableCell>Quantity</TableCell>
+                                        <TableCell>Unit Price</TableCell>
+                                        <TableCell>Total</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {orderGroup.map((item, idx) => (
+                                        <TableRow key={idx}>
+                                            <TableCell>{item.productName}</TableCell>
+                                            <TableCell>{item.quantity}</TableCell>
+                                            <TableCell>{item.price} ₺</TableCell>
+                                            <TableCell>{item.totalPrice} ₺</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+
+                            <Divider className="my-2" />
+                            <Typography variant="body2" className="text-right font-bold">
+                                Total Order Amount:{' '}
+                                {orderGroup.reduce((sum, i) => sum + i.totalPrice, 0).toFixed(2)} ₺
+                            </Typography>
+                        </Paper>
+                    ))
+                )}
+            </Box>
+        </>
     );
 }

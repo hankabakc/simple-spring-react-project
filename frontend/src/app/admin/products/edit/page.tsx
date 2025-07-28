@@ -1,168 +1,94 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import api from '@/services/api';
-import {
-    Box,
-    Paper,
-    Typography,
-    Stack,
-    TextField,
-    Button,
-    MenuItem,
-    CircularProgress,
-    Alert,
-} from '@mui/material';
 import { Product, Category } from '@/types/Type';
+import { fetchProductById, updateProduct } from '@/services/productService';
+import { fetchAllCategories } from '@/services/categoryService';
+import ProductForm from '@/components/admin/ProductForm';
+import useApiState from '@/hooks/useApiState';
+import { Box, Paper, Typography, CircularProgress, Alert } from '@mui/material';
 
 export default function EditProductPage() {
-    const router = useRouter();
     const searchParams = useSearchParams();
+    const router = useRouter();
     const id = searchParams.get('id');
 
     const [product, setProduct] = useState<Product | null>(null);
     const [categories, setCategories] = useState<Category[]>([]);
-    const [name, setName] = useState('');
-    const [price, setPrice] = useState<number>(0);
-    const [explanation, setExplanation] = useState('');
-    const [categoryId, setCategoryId] = useState<number>(0);
-    const [image, setImage] = useState<File | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const { loading, error, execute } = useApiState<Product>();
+    const [submitting, setSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!id) return;
 
         const fetchData = async () => {
             try {
-                const productRes = await api.get<Product>(`/api/products/detail`, {
-                    params: { id },
-                });
-                const productData = productRes.data;
-                setProduct(productData);
-                setName(productData.name);
-                setPrice(productData.price);
-                setExplanation(productData.explanation);
-                setCategoryId(
-                    categories.find((c) => c.name === productData.categoryName)?.id || 0
-                );
+                const [productRes, categoryRes] = await Promise.all([
+                    execute(() => fetchProductById(id)),
+                    fetchAllCategories(),
+                ]);
+
+                if (productRes.success) {
+                    setProduct(productRes.data!);
+                }
+
+                setCategories(categoryRes);
             } catch (err) {
                 console.error(err);
-                setError('Ürün verisi alınamadı.');
-            } finally {
-                setLoading(false);
             }
         };
 
-        api.get<Category[]>('/api/categories')
-            .then((res) => setCategories(res.data))
-            .catch(() => setCategories([]))
-            .finally(() => {
-                fetchData();
-            });
+        fetchData();
     }, [id]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!id) return;
-
-        setLoading(true);
-        setError(null);
+    const handleSubmit = async (formData: FormData) => {
+        setSubmitting(true);
+        setSubmitError(null);
 
         try {
-            const formData = new FormData();
-            formData.append('id', id);
-            formData.append('name', name);
-            formData.append('price', price.toString());
-            formData.append('explanation', explanation);
-            formData.append('categoryId', categoryId.toString());
-            if (image) formData.append('image', image); // opsiyonel olarak ekle
-
-            await api.put('/api/admin/products', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-
+            formData.append('id', id!);
+            await updateProduct(formData);
             router.push('/admin/products');
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
-            setError('Ürün güncellenemedi.');
+            setSubmitError('Failed to update product.');
         } finally {
-            setLoading(false);
+            setSubmitting(false);
         }
     };
 
-    if (!id) {
-        return <Alert severity="error">Geçersiz ürün ID</Alert>;
+    if (!id) return <Alert severity="error">Invalid product ID</Alert>;
+
+    if (loading) {
+        return <div className="flex justify-center items-center h-40"><CircularProgress /></div>;
     }
+
+    if (!product) {
+        return <Alert severity="error">{error || "Failed to fetch product data."}</Alert>;
+    }
+
+    const matchedCategory = categories.find(c => c.name === product.categoryName);
+    const categoryId = matchedCategory ? matchedCategory.id : 0;
 
     return (
         <Box className="p-8 flex justify-center">
             <Paper elevation={3} className="p-6 w-full max-w-xl">
-                <Typography variant="h6" className="mb-4 font-bold">Ürünü Güncelle</Typography>
-                {loading ? (
-                    <div className="flex justify-center items-center h-40">
-                        <CircularProgress />
-                    </div>
-                ) : (
-                    <form onSubmit={handleSubmit}>
-                        <Stack spacing={3}>
-                            {error && <Alert severity="error">{error}</Alert>}
-                            <TextField
-                                label="Ürün Adı"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                required
-                            />
-                            <TextField
-                                label="Fiyat"
-                                type="number"
-                                value={price}
-                                onChange={(e) => setPrice(parseFloat(e.target.value))}
-                                required
-                            />
-                            <TextField
-                                label="Açıklama"
-                                multiline
-                                minRows={3}
-                                value={explanation}
-                                onChange={(e) => setExplanation(e.target.value)}
-                                required
-                            />
-                            <TextField
-                                select
-                                label="Kategori"
-                                value={categoryId}
-                                onChange={(e) => setCategoryId(Number(e.target.value))}
-                                required
-                            >
-                                {categories.map((cat) => (
-                                    <MenuItem key={cat.id} value={cat.id}>
-                                        {cat.name}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) setImage(file);
-                                }}
-                            />
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                disabled={loading}
-                                className="btn-primary"
-                            >
-                                Güncelle
-                            </Button>
-                        </Stack>
-                    </form>
-                )}
+                <Typography variant="h6" className="mb-4 font-bold">Update Product</Typography>
+                <ProductForm
+                    initialValues={{
+                        name: product.name,
+                        price: product.price,
+                        explanation: product.explanation,
+                        categoryId: categoryId
+                    }}
+                    onSubmit={handleSubmit}
+                    categories={categories}
+                    loading={submitting}
+                    error={submitError}
+                    submitLabel="Update"
+                />
             </Paper>
         </Box>
     );

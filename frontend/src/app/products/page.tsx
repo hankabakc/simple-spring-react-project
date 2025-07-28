@@ -1,8 +1,6 @@
-// src/app/products/page.tsx (ProductsPage bileşeni)
-
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react'; // useRef'i import edin
+import React, { useEffect, useState, useRef } from 'react';
 import Content from '@/components/Content';
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
@@ -35,8 +33,7 @@ export default function ProductsPage() {
                 setCategories(categoriesRes.data);
                 fetchedCategoriesRef.current = true;
             } catch (err) {
-                console.error("Kategoriler çekilirken hata oluştu:", err);
-
+                console.error("Error fetching categories:", err);
             }
         };
         fetchCategories();
@@ -54,8 +51,8 @@ export default function ProductsPage() {
                 const productsRes = await api.get(`/api/products/search?${query.toString()}`);
                 setProducts(productsRes.data);
             } catch (err) {
-                console.error("Ürünler çekilirken hata oluştu:", err);
-                setError("Ürünler yüklenemedi.");
+                console.error("Error fetching products:", err);
+                setError("Failed to load products.");
             } finally {
                 setLoading(false);
             }
@@ -63,7 +60,6 @@ export default function ProductsPage() {
 
         fetchProducts();
     }, [urlSearchQuery, selectedCategoryIds.join(',')]);
-
 
     const handleSearchInputChange = (value: string) => {
         setCurrentSearchInput(value);
@@ -98,7 +94,7 @@ export default function ProductsPage() {
     };
 
     if (loading) {
-        return <div className="text-centered mt-10">Yükleniyor...</div>;
+        return <div className="text-centered mt-10">Loading...</div>;
     }
 
     if (error) {

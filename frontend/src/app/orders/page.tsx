@@ -16,6 +16,7 @@ import {
 import { ExpandMore, ExpandLess } from '@mui/icons-material';
 import { OrderResponse } from '@/types/Type';
 import Navbar from '@/components/Navbar';
+import { groupOrders } from '@/utils/orderUtils';
 
 export default function OrdersPage() {
     const [orders, setOrders] = useState<OrderResponse[][]>([]);
@@ -25,14 +26,10 @@ export default function OrdersPage() {
     const fetchOrders = async () => {
         try {
             const response = await api.get('/api/orders');
-            const grouped: Record<number, OrderResponse[]> = {};
-            for (const item of response.data) {
-                if (!grouped[item.orderId]) grouped[item.orderId] = [];
-                grouped[item.orderId].push(item);
-            }
+            const grouped = groupOrders(response.data);
             setOrders(Object.values(grouped));
         } catch (err) {
-            console.error('Siparişler alınamadı:', err);
+            console.error('Failed to fetch orders:', err);
         }
     };
 
@@ -51,11 +48,11 @@ export default function OrdersPage() {
             <Navbar search="" onSearchChange={noop} onSearchSubmit={noop} />
 
             <Box className="p-6 space-y-6">
-                <Typography variant="h5">🧾 Sipariş Geçmişi</Typography>
+                <Typography variant="h5">🧾 Order History</Typography>
 
                 {orders.length === 0 ? (
                     <Typography variant="body2" className="text-gray-500">
-                        Henüz siparişiniz yok.
+                        You have no orders yet.
                     </Typography>
                 ) : (
                     orders.map((orderGroup) => {
@@ -72,10 +69,10 @@ export default function OrdersPage() {
                                 <Box className="flex items-center justify-between">
                                     <Box>
                                         <Typography variant="subtitle1" className="font-semibold">
-                                            Sipariş ID: {orderId}
+                                            Order ID: {orderId}
                                         </Typography>
                                         <Typography variant="body2" className="text-gray-500">
-                                            Ürün Sayısı: {orderGroup.length}
+                                            Item Count: {orderGroup.length}
                                         </Typography>
                                     </Box>
                                     <IconButton size="small">
@@ -114,7 +111,7 @@ export default function OrdersPage() {
                         variant="filled"
                         onClose={() => setSuccessOpen(false)}
                     >
-                        Sipariş başarıyla oluşturuldu!
+                        Order placed successfully!
                     </Alert>
                 </Snackbar>
             </Box>

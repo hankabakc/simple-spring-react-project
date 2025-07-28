@@ -1,9 +1,6 @@
-// src/components/Content.tsx
-
 'use client';
 import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useCart } from "@/hooks/useCart";
 import { Product } from "@/types/Type";
 import { CardContent, CardActions, Typography, Button, Divider, CardMedia } from "@mui/material";
 import Link from "next/link";
@@ -14,7 +11,6 @@ import { useCartContext } from "@/context/CartContext";
 export default function Content({ products }: { products: Product[] }) {
     const [showLoginModal, setShowLoginModal] = useState(false);
     const { user } = useAuth();
-    const { addToCart } = useCart(user?.token || '');
     const { addToCartAndRefresh } = useCartContext();
 
     const handleAddToCart = async (productId: number) => {
@@ -24,9 +20,10 @@ export default function Content({ products }: { products: Product[] }) {
         }
         try {
             await addToCartAndRefresh(productId, 1);
-            alert("Ürün sepete eklendi!");
+            alert("Product added to cart!");
         } catch (error) {
             console.error(error);
+            alert("Failed to add product to cart.");
         }
     };
 
@@ -63,7 +60,7 @@ export default function Content({ products }: { products: Product[] }) {
                                 className="btn-primary"
                                 onClick={() => handleAddToCart(product.id)}
                             >
-                                Sepete Ekle
+                                Add to Cart
                             </Button>
                         </CardActions>
                     </StyledCard>
