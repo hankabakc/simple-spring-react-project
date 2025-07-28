@@ -4,12 +4,9 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { CartItem } from '@/types/Type';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/context/AuthContext';
+import { CartContextType } from '@/types/Type';
 
-type CartContextType = {
-    cartItems: CartItem[];
-    refreshCart: () => Promise<void>;
-    addToCartAndRefresh: (productId: number, quantity: number) => Promise<void>;
-};
+
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 

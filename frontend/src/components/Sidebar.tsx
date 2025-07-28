@@ -22,8 +22,8 @@ export default function Sidebar({ selected, onChange, categories, className }: S
                 const res = await api.get('/api/categories');
                 setLocalCategories(res.data);
             } catch (err) {
-                console.error("Kategoriler çekilirken hata oluştu:", err);
-                setError("Kategoriler yüklenemedi.");
+                console.error("Error fetching categories:", err);
+                setError("Failed to load categories.");
             } finally {
                 setLoading(false);
             }
@@ -35,7 +35,7 @@ export default function Sidebar({ selected, onChange, categories, className }: S
         return (
             <Box className={`sidebar-primary flex flex-col p-default border-r border-purple-600 ${className || ''}`}>
                 <CircularProgress size={24} className="text-white" />
-                <Typography className="text-white mt-2">Kategoriler yükleniyor...</Typography>
+                <Typography className="text-white mt-2">Loading categories...</Typography>
             </Box>
         );
     }
@@ -50,17 +50,15 @@ export default function Sidebar({ selected, onChange, categories, className }: S
 
     return (
         <Box className={` flex flex-col border-red-700 p-5 w-64 ${className || ''}`}>
-            <Typography variant="h6" className="text-white mb-default text-bold">
-                Kategoriler
+            <Typography variant="h6" className="text-white mb-default font-bold">
+                Categories
             </Typography>
             {localCategories.map((category) => (
                 <FormControlLabel
                     key={category.id}
                     control={
                         <Checkbox
-                            // DEĞİŞİKLİK 1: selected prop'u artık ID'leri içerecek
                             checked={selected.includes(category.id)}
-                            // DEĞİŞİKLİK 2: onChange fonksiyonuna kategori adı yerine ID gönder
                             onChange={(e) => onChange(category.id, e.target.checked)}
                             className="category-checkbox"
                         />

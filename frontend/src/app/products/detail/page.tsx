@@ -1,12 +1,11 @@
-// src/app/products/detail/page.tsx
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import DetailContent from '@/components/DetailContent'
+import DetailContent from '@/components/DetailContent';
 import { Product } from '@/types/Type';
-import api from '@/services/api';
 import Navbar from '@/components/Navbar';
+import { fetchProductById } from '@/services/productService';
 
 export default function ProductDetailPage() {
     const searchParams = useSearchParams();
@@ -19,16 +18,16 @@ export default function ProductDetailPage() {
     useEffect(() => {
         const fetchProduct = async () => {
             if (!id) {
-                setError("Ürün ID'si bulunamadı.");
+                setError("Product ID not found.");
                 setLoading(false);
                 return;
             }
             try {
-                const res = await api.get(`/api/products/detail?id=${id}`);
-                setProduct(res.data);
+                const result = await fetchProductById(id);
+                setProduct(result);
             } catch (err) {
-                console.error("Ürün detayları çekilirken hata oluştu:", err);
-                setError("Ürün detayları yüklenemedi.");
+                console.error("Error fetching product details:", err);
+                setError("Failed to load product details.");
             } finally {
                 setLoading(false);
             }
@@ -37,19 +36,26 @@ export default function ProductDetailPage() {
         fetchProduct();
     }, [id]);
 
-    const handleSearchChange = (searchValue: string) => {
-        setSearch(searchValue);
+    const handleSearchChange = (value: string) => {
+        setSearch(value);
     };
+
+    const noop = () => { };
 
     return (
         <>
-            <Navbar search={search} onSearchChange={handleSearchChange} />
+            <Navbar
+                search={search}
+                onSearchChange={handleSearchChange}
+                onSearchSubmit={noop}
+            />
+
             {loading ? (
-                <div className="text-centered mt-10">Yükleniyor...</div>
+                <div className="text-center mt-10">Loading...</div>
             ) : error ? (
-                <div className="text-centered mt-10 text-red-500">{error}</div>
+                <div className="text-center mt-10 text-red-500">{error}</div>
             ) : !product ? (
-                <div className="text-centered mt-10">Ürün bulunamadı.</div>
+                <div className="text-center mt-10">Product not found.</div>
             ) : (
                 <DetailContent product={product} />
             )}

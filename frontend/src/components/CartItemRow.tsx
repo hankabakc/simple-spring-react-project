@@ -17,7 +17,6 @@ export default function CartItemRow({
 }) {
     const [localQuantity, setLocalQuantity] = useState(item.quantity);
 
-    // Güncel quantity prop değişirse local state'i güncelle
     useEffect(() => {
         setLocalQuantity(item.quantity);
     }, [item.quantity]);

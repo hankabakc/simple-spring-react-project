@@ -22,10 +22,10 @@ export default function DetailContent({ product }: DetailContentProps) {
         }
         try {
             await addToCartAndRefresh(product.id, 1);
-            alert('Ürün sepete eklendi!');
+            alert('Product added to cart!');
         } catch (error: any) {
-            console.error('Sepete ürün eklenirken hata oluştu:', error.response?.data || error.message || error);
-            alert('Sepete ürün eklenirken hata oluştu. Detaylar için konsola bakın.');
+            console.error('An error occurred while adding the product to the cart:', error.response?.data || error.message || error);
+            alert('An error occurred while adding the product to the cart. Check console for details.');
         }
     };
 
@@ -56,7 +56,7 @@ export default function DetailContent({ product }: DetailContentProps) {
                         className="btn-primary"
                         onClick={handleAddToCart}
                     >
-                        Sepete Ekle
+                        Add to Cart
                     </Button>
                 </CardActions>
             </StyledCard>

@@ -1,36 +1,30 @@
 'use client';
 
-import React from 'react';
-import { Box, Paper, Typography, Button } from '@mui/material';
-import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { Box, Paper, Stack, Button } from '@mui/material';
 import LoginForm from '@/components/auth/LoginForm';
-import { User } from '@/types/Type';
 
 export default function LoginPage() {
-    const { setUser } = useAuth();
     const router = useRouter();
 
-    const handleLoginSuccess = (user: User) => {
-        setUser(user);
-        router.push('/products');
+    const handleLoginSuccess = (userData: any) => {
+        localStorage.setItem('user', JSON.stringify(userData));
+        router.push('/');
     };
 
     return (
         <Box className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
             <Paper elevation={3} className="p-default max-w-md w-full rounded-xl">
-                <Typography variant="h5" className="mb-default text-bold text-centered">
-                    Login
-                </Typography>
-                <LoginForm onLoginSuccess={handleLoginSuccess} />
-                <Button
-                    variant="text"
-                    color="secondary"
-                    onClick={() => router.push('/auth/register')}
-                    className="mt-default"
-                >
-                    Don’t have an account? Register
-                </Button>
+                <Stack spacing={2}>
+                    <LoginForm onLoginSuccess={handleLoginSuccess} />
+                    <Button
+                        variant="text"
+                        color="secondary"
+                        onClick={() => router.push('/auth/register')}
+                    >
+                        Don't have an account? Register
+                    </Button>
+                </Stack>
             </Paper>
         </Box>
     );

@@ -1,116 +1,86 @@
 'use client';
 
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Box, TextField, Button, Typography, Alert, CircularProgress, Stack } from '@mui/material';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Box, Paper, Typography, TextField, Button, Alert, CircularProgress } from '@mui/material';
+import { registerUser } from '@/services/authService';
+import useApiState from '@/hooks/useApiState';
 
-type RegisterFormProps = {
-    onRegisterSuccess: (token: string) => void;
-};
+export default function RegisterPage() {
+    const router = useRouter();
+    const { loading, error, execute } = useApiState<void>();
 
-export default function RegisterForm({ onRegisterSuccess }: RegisterFormProps) {
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [form, setForm] = useState({
+        name: '',
+        surname: '',
+        email: '',
+        password: '',
+    });
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError(null);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+    };
 
-        if (password !== confirmPassword) {
-            setError('Passwords do not match.');
-            return;
-        }
-
-        setLoading(true);
-
-        try {
-            // 1️⃣ Register isteği
-            await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/register`, {
-                username,
-                email,
-                password
-            });
-
-            // 2️⃣ Register başarılı → Şimdi otomatik login yap
-            const loginRes = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
-                username,
-                password
-            });
-
-            const token = loginRes.data.token;
-            if (token) {
-                onRegisterSuccess(token);
-            } else {
-                setError('Login after registration succeeded but no token returned.');
-            }
-        } catch (err: any) {
-            console.error(err);
-            setError('Registration failed. Please try again.');
-        } finally {
-            setLoading(false);
+    const handleSubmit = async () => {
+        const result = await execute(() => registerUser(form));
+        if (result.success) {
+            router.push('/login');
         }
     };
 
     return (
-        <Box className="p-4">
-            <Typography variant="h5" className="mb-default text-bold text-centered">
-                Register
-            </Typography>
+        <Box className="p-8 flex justify-center">
+            <Paper elevation={3} className="p-6 w-full max-w-md">
+                <Typography variant="h6" className="mb-4 font-bold">
+                    Register
+                </Typography>
 
-            {error && <Alert severity="error" className="mb-default">{error}</Alert>}
-
-            <form onSubmit={handleSubmit}>
-                <Stack spacing={2}>
+                <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
                     <TextField
-                        label="Username"
-                        variant="outlined"
+                        label="First Name"
+                        name="name"
                         fullWidth
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required
+                        value={form.name}
+                        onChange={handleChange}
+                    />
+                    <TextField
+                        label="Last Name"
+                        name="surname"
+                        fullWidth
+                        value={form.surname}
+                        onChange={handleChange}
                     />
                     <TextField
                         label="Email"
-                        variant="outlined"
+                        name="email"
                         type="email"
                         fullWidth
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
+                        value={form.email}
+                        onChange={handleChange}
                     />
                     <TextField
                         label="Password"
-                        variant="outlined"
+                        name="password"
                         type="password"
                         fullWidth
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
+                        value={form.password}
+                        onChange={handleChange}
                     />
-                    <TextField
-                        label="Confirm Password"
-                        variant="outlined"
-                        type="password"
-                        fullWidth
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                    />
+
+                    {error && <Alert severity="error">{error}</Alert>}
+
                     <Button
                         type="submit"
                         variant="contained"
                         color="primary"
+                        fullWidth
                         disabled={loading}
-                        className="btn-primary"
                     >
                         {loading ? <CircularProgress size={24} /> : 'Register'}
                     </Button>
-                </Stack>
-            </form>
+                </form>
+            </Paper>
         </Box>
     );
 }

@@ -1,82 +1,50 @@
 'use client';
 
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Stack, TextField, Button, Alert, CircularProgress } from '@mui/material';
-import { parseJwt } from '@/utils/auth';
-import { User } from '@/types/Type';
+import { useState } from 'react';
+import { TextField, Button, Stack, Alert, CircularProgress } from '@mui/material';
+import useApiState from '@/hooks/useApiState';
+import { loginUser } from '@/services/authService';
+import { LoginFormProps } from '@/types/Type';
 
-export default function LoginForm({
-    onLoginSuccess,
-}: {
-    onLoginSuccess: (user: User) => void;
-}) {
-    const [username, setUsername] = useState('');
+
+
+export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
+    const { loading, error, execute } = useApiState();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError(null);
-        setLoading(true);
+    const handleSubmit = async () => {
+        const result = await execute(() => loginUser({ email, password }));
 
-        try {
-            const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
-                username,
-                password,
-            });
-
-            const token = res.data.token;
-            const role = res.data.role;
-
-            const payload = parseJwt(token);
-
-            onLoginSuccess({
-                id: payload.id,
-                username: payload.username,
-                token,
-                role,
-            });
-        } catch (err: any) {
-            console.error(err);
-            setError('Login failed. Please check your credentials.');
-        } finally {
-            setLoading(false);
+        if (result.success && result.data) {
+            onLoginSuccess(result.data);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <Stack spacing={2}>
-                {error && <Alert severity="error">{error}</Alert>}
-                <TextField
-                    label="Username"
-                    variant="outlined"
-                    fullWidth
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                />
-                <TextField
-                    label="Password"
-                    variant="outlined"
-                    type="password"
-                    fullWidth
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    disabled={loading}
-                    className="btn-primary"
-                >
-                    {loading ? <CircularProgress size={24} /> : 'Login'}
-                </Button>
-            </Stack>
-        </form>
+        <Stack spacing={2}>
+            <TextField
+                label="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                fullWidth
+            />
+            <TextField
+                label="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                fullWidth
+            />
+            {error && <Alert severity="error">{error}</Alert>}
+            <Button
+                variant="contained"
+                onClick={handleSubmit}
+                disabled={loading}
+                fullWidth
+            >
+                {loading ? <CircularProgress size={24} /> : 'Login'}
+            </Button>
+        </Stack>
     );
 }

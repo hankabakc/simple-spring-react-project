@@ -81,6 +81,23 @@ export default function Navbar({ search, onSearchChange, onSearchSubmit }: Navba
                         />
                     </Box>
                     <ButtonGroup variant="text" className="space-x-2">
+                        {user?.role === 'ADMIN' && (
+                            <>
+                                <Button
+                                    className="navbar-button"
+                                    onClick={() => router.push('/admin/orders')}
+                                >
+                                    Admin Orders
+                                </Button>
+                                <Button
+                                    className="navbar-button"
+                                    onClick={() => router.push('/admin/products')}
+                                >
+                                    Admin Products
+                                </Button>
+                            </>
+                        )}
+
                         {user && (
                             <Button
                                 startIcon={<ReceiptLongIcon />}
@@ -105,6 +122,7 @@ export default function Navbar({ search, onSearchChange, onSearchSubmit }: Navba
                             {user ? 'Logout' : 'Login'}
                         </Button>
                     </ButtonGroup>
+
                 </Toolbar>
             </AppBar>
 

@@ -11,17 +11,12 @@ import {
     Paper,
     List,
     Divider,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions
 } from '@mui/material';
 import LoginRequiredModal from '@/components/LoginRequeiredModal';
 import { useRouter } from 'next/navigation';
 import CartItemRow from '@/components/CartItemRow';
 import MessageBox from '@/components/MessageBox';
 import api from '@/services/api';
-
 
 export default function CartPage() {
     const { user, loading: authLoading } = useAuth();
@@ -68,28 +63,6 @@ export default function CartPage() {
         }
     };
 
-
-
-    /*     const handleChangeQuantity = async (item: CartItem, delta: number) => {
-            if (!user) {
-                setShowLoginModal(true);
-                return;
-            }
-            const newQuantity = item.quantity + delta;
-            try {
-                if (newQuantity <= 0) {
-                    await deleteFromCart(item.productId);
-                } else {
-                    await setCartQuantity(item.productId, newQuantity);
-    
-                }
-                fetchCartItems();
-            } catch (error) {
-                console.error("Quantity change error:", error);
-                showMessage("Error", "Could not update quantity.");
-            }
-        }; */
-
     const handleRemoveFromCart = async (productId: number) => {
         if (!user) {
             setShowLoginModal(true);
@@ -125,7 +98,6 @@ export default function CartPage() {
             await clearCart();
             fetchCartItems();
             showMessage("Success", "Order placed successfully!");
-
         } catch (error) {
             console.error("Order creation error:", error);
             let errorMessage = "Failed to place order.";
@@ -232,6 +204,13 @@ export default function CartPage() {
                 )}
             </Paper>
 
+            <MessageBox
+                open={messageBoxOpen}
+                title={messageBoxTitle}
+                message={messageBoxContent}
+                onClose={() => setMessageBoxOpen(false)}
+            />
+
             <LoginRequiredModal
                 open={showLoginModal}
                 onClose={() => {
@@ -239,12 +218,16 @@ export default function CartPage() {
                     router.push('/login');
                 }}
             />
-            <MessageBox
-                open={messageBoxOpen}
-                title={messageBoxTitle}
-                message={messageBoxContent}
-                onClose={() => setMessageBoxOpen(false)}
-            />
+
+            <Box className="text-center mt-10">
+                <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => router.push('/products')}
+                >
+                    Return to Products Page
+                </Button>
+            </Box>
         </Box>
     );
 }
