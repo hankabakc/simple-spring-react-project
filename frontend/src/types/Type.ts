@@ -102,3 +102,23 @@ export type CartContextType = {
     refreshCart: () => Promise<void>;
     addToCartAndRefresh: (productId: number, quantity: number) => Promise<void>;
 };
+
+export type LoginRequest = {
+    username: string;
+    password: string;
+};
+
+export type RegisterResponse = {
+    success: boolean;
+};
+
+export type RegisterRequest = {
+    username: string;
+    email: string;
+    password: string;
+};
+
+export type LoginResponse = {
+    token: string;
+    role: string;
+};

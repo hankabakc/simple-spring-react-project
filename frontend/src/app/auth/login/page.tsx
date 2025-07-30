@@ -9,7 +9,7 @@ export default function LoginPage() {
 
     const handleLoginSuccess = (userData: any) => {
         localStorage.setItem('user', JSON.stringify(userData));
-        router.push('/');
+        router.push('/products');
     };
 
     return (

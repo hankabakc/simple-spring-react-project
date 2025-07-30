@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Card, CardProps } from '@mui/material';
+import '@/css/all.css';
 
 interface StyledCardProps extends CardProps {
 }

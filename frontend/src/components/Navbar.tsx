@@ -21,6 +21,9 @@ import { useRouter } from 'next/navigation';
 import LoginRequiredModal from "@/components/LoginRequeiredModal";
 import { NavbarProps } from '@/types/Type';
 import { useCartContext } from '@/context/CartContext';
+import '@/css/all.css'
+import SearchIcon from '@mui/icons-material/Search';
+import InputAdornment from '@mui/material/InputAdornment';
 
 export default function Navbar({ search, onSearchChange, onSearchSubmit }: NavbarProps) {
     const { user, logout } = useAuth();
@@ -65,32 +68,37 @@ export default function Navbar({ search, onSearchChange, onSearchSubmit }: Navba
         <>
             <AppBar
                 position="static"
-                className="bg-purple-950 border-b divider-primary shadow-none"
             >
                 <Toolbar className="flex justify-between items-center px-5 h-20">
                     <Box className="flex items-center">
                         <TextField
-                            label="Search"
                             variant="outlined"
                             size="small"
                             value={search}
                             onChange={(e) => onSearchChange(e.target.value)}
                             onKeyDown={handleKeyPress}
                             color="secondary"
-                            className="search-input"
+                            className="bg-white rounded"
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
                     </Box>
                     <ButtonGroup variant="text" className="space-x-2">
                         {user?.role === 'ADMIN' && (
                             <>
                                 <Button
-                                    className="navbar-button"
+                                    className="navbar-button text-white"
                                     onClick={() => router.push('/admin/orders')}
                                 >
                                     Admin Orders
                                 </Button>
                                 <Button
-                                    className="navbar-button"
+                                    className="navbar-button text-white"
                                     onClick={() => router.push('/admin/products')}
                                 >
                                     Admin Products
@@ -101,7 +109,7 @@ export default function Navbar({ search, onSearchChange, onSearchSubmit }: Navba
                         {user && (
                             <Button
                                 startIcon={<ReceiptLongIcon />}
-                                className="navbar-button"
+                                className="navbar-button text-white"
                                 onClick={goToOrders}
                             >
                                 Orders
@@ -109,7 +117,7 @@ export default function Navbar({ search, onSearchChange, onSearchSubmit }: Navba
                         )}
                         <Button
                             startIcon={<ShoppingCartIcon />}
-                            className="navbar-button"
+                            className="navbar-button text-white"
                             onClick={handleCartClick}
                         >
                             Cart
@@ -117,7 +125,7 @@ export default function Navbar({ search, onSearchChange, onSearchSubmit }: Navba
                         <Button
                             startIcon={<PersonIcon />}
                             onClick={handleUserClick}
-                            className="navbar-button"
+                            className="navbar-button text-white"
                         >
                             {user ? 'Logout' : 'Login'}
                         </Button>
