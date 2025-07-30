@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Product } from '@/types/Type';
 import { CardContent, CardActions, Typography, Button, Divider, CardMedia } from '@mui/material';
 import { DetailContentProps } from '@/types/Type';
-import StyledCard from './common/StyledCard';
+import StyledCard from '../StyledCard';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/hooks/useCart';
 import LoginRequiredModal from './LoginRequeiredModal';

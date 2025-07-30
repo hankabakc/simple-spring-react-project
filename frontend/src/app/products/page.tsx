@@ -102,7 +102,7 @@ export default function ProductsPage() {
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-50">
+        <div className="flex flex-col min-h-screen bg-blue-300">
             <Navbar
                 search={currentSearchInput}
                 onSearchChange={handleSearchInputChange}

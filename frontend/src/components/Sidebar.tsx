@@ -1,8 +1,14 @@
-// src/components/Sidebar.tsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Checkbox, FormControlLabel, CircularProgress, Alert } from '@mui/material';
+import {
+    Box,
+    Typography,
+    Checkbox,
+    FormControlLabel,
+    CircularProgress,
+    Alert
+} from '@mui/material';
 import { SidebarProps, Category } from '@/types/Type';
 import api from '@/services/api';
 
@@ -33,24 +39,24 @@ export default function Sidebar({ selected, onChange, categories, className }: S
 
     if (loading) {
         return (
-            <Box className={`sidebar-primary flex flex-col p-default border-r border-purple-600 ${className || ''}`}>
-                <CircularProgress size={24} className="text-white" />
-                <Typography className="text-white mt-2">Loading categories...</Typography>
+            <Box className={`flex flex-col p-4 border-r ${className || ''}`}>
+                <CircularProgress size={24} />
+                <Typography variant="body2" className="mt-2">Loading categories...</Typography>
             </Box>
         );
     }
 
     if (error) {
         return (
-            <Box className={`sidebar-primary flex flex-col p-default border-r border-purple-600 ${className || ''}`}>
-                <Alert severity="error" className="bg-red-500 text-white">{error}</Alert>
+            <Box className={`flex flex-col p-4 border-r ${className || ''}`}>
+                <Alert severity="error">{error}</Alert>
             </Box>
         );
     }
 
     return (
-        <Box className={` flex flex-col border-red-700 p-5 w-64 ${className || ''}`}>
-            <Typography variant="h6" className="text-white mb-default font-bold">
+        <Box className={`flex flex-col p-5 w-64 bg-white ${className || ''}`}>
+            <Typography variant="h6" className="mb-4 font-bold">
                 Categories
             </Typography>
             {localCategories.map((category) => (
@@ -60,10 +66,9 @@ export default function Sidebar({ selected, onChange, categories, className }: S
                         <Checkbox
                             checked={selected.includes(category.id)}
                             onChange={(e) => onChange(category.id, e.target.checked)}
-                            className="category-checkbox"
                         />
                     }
-                    label={<Typography className="text-gray-300">{category.name}</Typography>}
+                    label={<Typography>{category.name}</Typography>}
                     className="mb-2"
                 />
             ))}

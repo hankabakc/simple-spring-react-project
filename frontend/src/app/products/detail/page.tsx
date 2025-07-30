@@ -43,7 +43,7 @@ export default function ProductDetailPage() {
     const noop = () => { };
 
     return (
-        <>
+        <div className='min-h-screen bg-blue-300'>
             <Navbar
                 search={search}
                 onSearchChange={handleSearchChange}
@@ -59,6 +59,6 @@ export default function ProductDetailPage() {
             ) : (
                 <DetailContent product={product} />
             )}
-        </>
+        </div>
     );
 }

@@ -1,22 +1,38 @@
 'use client';
 
 import { useState } from 'react';
-import { TextField, Button, Stack, Alert, CircularProgress } from '@mui/material';
+import {
+    TextField,
+    Button,
+    Stack,
+    Alert,
+    CircularProgress,
+} from '@mui/material';
 import useApiState from '@/hooks/useApiState';
 import { loginUser } from '@/services/authService';
-import { LoginFormProps } from '@/types/Type';
-
-
+import { LoginFormProps, LoginResponse } from '@/types/Type';
+import { useAuth } from '@/context/AuthContext';
+import { parseJwt } from '@/utils/authUtils';
 
 export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const { loading, error, execute } = useApiState();
+    const { loading, error, execute } = useApiState<LoginResponse>();
+    const { setUser } = useAuth();
 
     const handleSubmit = async () => {
-        const result = await execute(() => loginUser({ email, password }));
+        const result = await execute(() => loginUser({ username, password }));
 
         if (result.success && result.data) {
+            const payload = parseJwt(result.data.token);
+
+            setUser({
+                id: payload.id,
+                username: payload.username,
+                token: result.data.token,
+                role: payload.role as 'ADMIN' | 'USER',
+            });
+
             onLoginSuccess(result.data);
         }
     };
@@ -24,9 +40,9 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
     return (
         <Stack spacing={2}>
             <TextField
-                label="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                label="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 fullWidth
             />
             <TextField

@@ -5,7 +5,7 @@ import { Product } from "@/types/Type";
 import { CardContent, CardActions, Typography, Button, Divider, CardMedia } from "@mui/material";
 import Link from "next/link";
 import LoginRequiredModal from "./LoginRequeiredModal";
-import StyledCard from './common/StyledCard';
+import StyledCard from '../StyledCard';
 import { useCartContext } from "@/context/CartContext";
 
 export default function Content({ products }: { products: Product[] }) {

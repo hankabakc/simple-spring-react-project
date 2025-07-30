@@ -155,7 +155,7 @@ export default function CartPage() {
     }
 
     return (
-        <Box className="min-h-screen bg-gray-50 p-6 font-inter">
+        <Box className="min-h-screen bg-blue-300 p-6 font-inter">
             <Paper elevation={3} className="p-8 max-w-2xl mx-auto rounded-xl shadow-lg">
                 <Typography variant="h4" className="mb-6 text-center font-bold text-blue-700">
                     Your Cart
@@ -186,10 +186,11 @@ export default function CartPage() {
                                     variant="outlined"
                                     color="error"
                                     onClick={handleClearCart}
-                                    className="px-6 py-3 rounded-lg border-2 border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600 transition duration-300 ease-in-out"
+                                    className="px-6 py-3 rounded-lg border-2 border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600 transition duration-300 ease-in-out "
                                 >
                                     Clear Cart
                                 </Button>
+                                <div className='w-2'></div>
                                 <Button
                                     variant="contained"
                                     color="primary"
@@ -221,7 +222,7 @@ export default function CartPage() {
 
             <Box className="text-center mt-10">
                 <Button
-                    variant="outlined"
+                    variant="contained"
                     color="primary"
                     onClick={() => router.push('/products')}
                 >

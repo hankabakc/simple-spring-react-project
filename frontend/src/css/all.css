@@ -1,0 +1,17 @@
+.navbar-button {
+    color: white !important;
+    font-weight: 500;
+    text-transform: none;
+}
+
+.navbar-button:hover {
+    color: #afafaf !important;
+
+}
+
+.card-primary {
+    border-radius: 20px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

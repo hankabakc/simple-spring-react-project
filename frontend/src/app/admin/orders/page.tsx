@@ -26,8 +26,6 @@ export default function AdminOrdersPage() {
     const [filters, setFilters] = useState({
         username: '',
         productName: '',
-        minPrice: '',
-        maxPrice: '',
     });
 
     const fetchOrders = async () => {
@@ -41,17 +39,24 @@ export default function AdminOrdersPage() {
             params: {
                 username: filters.username || undefined,
                 productName: filters.productName || undefined,
-                minPrice: filters.minPrice || undefined,
-                maxPrice: filters.maxPrice || undefined,
             },
         });
         const grouped = groupOrders(response.data);
         setOrdersGrouped(grouped);
     };
 
-    const deleteOrderGroup = async (orderId: number) => {
-        await api.delete(`/api/admin/orders/group/${orderId}`);
-        fetchOrders();
+    const deleteOrderGroup = async (orderGroup: OrderResponse[]) => {
+        try {
+            await Promise.all(
+                orderGroup.map((order) =>
+                    api.delete(`/api/admin/orders/${order.id}`)
+                )
+            );
+            fetchOrders();
+        } catch (error) {
+            console.error('Silme sırasında hata:', error);
+            alert('Silme işlemi başarısız oldu.');
+        }
     };
 
     useEffect(() => {
@@ -82,20 +87,6 @@ export default function AdminOrdersPage() {
                         onChange={(e) => setFilters((f) => ({ ...f, productName: e.target.value }))}
                         className="w-full sm:w-[200px]"
                     />
-                    <TextField
-                        label="Min Price"
-                        type="number"
-                        value={filters.minPrice}
-                        onChange={(e) => setFilters((f) => ({ ...f, minPrice: e.target.value }))}
-                        className="w-full sm:w-[150px]"
-                    />
-                    <TextField
-                        label="Max Price"
-                        type="number"
-                        value={filters.maxPrice}
-                        onChange={(e) => setFilters((f) => ({ ...f, maxPrice: e.target.value }))}
-                        className="w-full sm:w-[150px]"
-                    />
                     <Button variant="contained" onClick={searchOrders} className="h-[56px]">
                         Search
                     </Button>
@@ -112,7 +103,10 @@ export default function AdminOrdersPage() {
                                 <Typography variant="subtitle1" className="font-semibold">
                                     Order ID: {orderId} — User: {orderGroup[0].username}
                                 </Typography>
-                                <IconButton color="error" onClick={() => deleteOrderGroup(Number(orderId))}>
+                                <IconButton
+                                    color="error"
+                                    onClick={() => deleteOrderGroup(orderGroup)}
+                                >
                                     <DeleteIcon />
                                 </IconButton>
                             </Box>
