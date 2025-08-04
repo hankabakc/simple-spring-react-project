@@ -30,5 +30,9 @@ export const searchProducts = async (params: { search?: string; categoryIds?: st
 };
 
 export const deleteProductById = async (id: number): Promise<void> => {
-    await api.delete(`/api/admin/products/${id}`);
+    await api.delete('/api/admin/products', {
+        params: {
+            id: id
+        }
+    });
 };
