@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Category } from '@/types/Type';
 import { fetchAllCategories } from '@/services/categoryService';
@@ -14,9 +14,20 @@ export default function AddProductPage() {
     const [categories, setCategories] = useState<Category[]>([]);
     const { loading, error, execute } = useApiState<void>();
 
-    fetchAllCategories()
-        .then(setCategories)
-        .catch(() => setCategories([]));
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await fetchAllCategories();
+                setCategories(data);
+            } catch (err) {
+                console.error("Failed to fetch categories:", err);
+                // Hata durumunda boş bir liste ile devam edebiliriz
+                setCategories([]);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     const handleSubmit = async (formData: FormData) => {
         const result = await execute(() => createProduct(formData));

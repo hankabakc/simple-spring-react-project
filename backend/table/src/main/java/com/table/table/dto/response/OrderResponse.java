@@ -5,18 +5,19 @@ import java.math.BigDecimal;
 public class OrderResponse {
 
     private Long id;
-    private Long orderId; // orderGroupId buraya yansıtıldı
+    private Long orderId;
     private String username;
     private String productName;
     private BigDecimal price;
     private Integer quantity;
     private BigDecimal totalPrice;
+    private String adminMessage;
 
     public OrderResponse() {
     }
 
     public OrderResponse(Long id, Long orderId, String username, String productName, BigDecimal price,
-            Integer quantity) {
+            Integer quantity, String adminMessage) {
         this.id = id;
         this.orderId = orderId;
         this.username = username;
@@ -24,6 +25,7 @@ public class OrderResponse {
         this.price = price;
         this.quantity = quantity;
         this.totalPrice = price.multiply(BigDecimal.valueOf(quantity));
+        this.adminMessage = adminMessage;
     }
 
     // Getter - Setter
@@ -82,5 +84,13 @@ public class OrderResponse {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public String getAdminMessage() {
+        return adminMessage;
+    }
+
+    public void setAdminMessage(String adminMessage) {
+        this.adminMessage = adminMessage;
     }
 }

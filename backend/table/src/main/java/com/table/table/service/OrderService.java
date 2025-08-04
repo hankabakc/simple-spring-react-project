@@ -38,25 +38,9 @@ public class OrderService {
                 order.getUser().getUsername(),
                 order.getName(),
                 order.getPrice(),
-                order.getQuantity());
+                order.getQuantity(),
+                order.getAdminMessage());
     }
-
-    /*
-     * public OrderResponse createOrder(String username, OrderRequest request) {
-     * User user = userRepository.findByUsername(username)
-     * .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-     * "User not found"));
-     * 
-     * Order order = new Order();
-     * order.setUser(user);
-     * order.setName(request.getName());
-     * order.setPrice(request.getPrice());
-     * order.setQuantity(request.getQuantity());
-     * order.setOrderGroupId(System.currentTimeMillis());
-     * 
-     * return toResponse(orderRepository.save(order));
-     * }
-     */
 
     @Transactional
     public List<OrderResponse> createOrdersFromCart(String username) {
@@ -120,5 +104,14 @@ public class OrderService {
 
     public void deleteOrderById(Long id) {
         orderRepository.deleteById(id);
+    }
+
+    public void deleteOrderByIdWithMessage(Long id, String adminMessage) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+
+        order.setAdminMessage(adminMessage);
+        orderRepository.save(order);
+        orderRepository.delete(order);
     }
 }

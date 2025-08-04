@@ -35,6 +35,9 @@ public class Order {
     @Column(name = "order_group_id")
     private Long orderGroupId;
 
+    @Column(name = "admin_message")
+    private String adminMessage;
+
     public Order() {
     }
 
@@ -88,5 +91,13 @@ public class Order {
 
     public void setOrderGroupId(Long orderGroupId) {
         this.orderGroupId = orderGroupId;
+    }
+
+    public String getAdminMessage() {
+        return adminMessage;
+    }
+
+    public void setAdminMessage(String adminMessage) {
+        this.adminMessage = adminMessage;
     }
 }

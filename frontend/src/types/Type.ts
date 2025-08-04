@@ -122,3 +122,8 @@ export type LoginResponse = {
     token: string;
     role: string;
 };
+export type ProductImageSelectorProps = {
+    images: string[];
+    selectedImage: string | null;
+    onSelect: (img: string) => void;
+};
