@@ -4,7 +4,7 @@ export type Product = {
     price: number;
     explanation: string;
     categoryName: string;
-    base64Image: string;
+    base64Images: string[];
 };
 
 export type Category = {
