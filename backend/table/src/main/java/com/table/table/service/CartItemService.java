@@ -91,6 +91,12 @@ public class CartItemService {
         cartItemRepository.deleteAll(items);
     }
 
+    // Yeni metodu ekleyin
+    @Transactional
+    public void deleteAllByProductId(Long productId) {
+        cartItemRepository.deleteByProductId(productId);
+    }
+
     @Transactional
     public void setQuantityForUser(Long userId, Long productId, Integer newQuantity) {
         if (newQuantity <= 0) {

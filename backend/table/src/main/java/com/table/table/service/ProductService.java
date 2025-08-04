@@ -17,16 +17,20 @@ import com.table.table.model.Product;
 import com.table.table.model.ProductImage;
 import com.table.table.repository.CategoryRepository;
 import com.table.table.repository.ProductRepository;
+import com.table.table.repository.CartItemRepository; // Ekleyin
 
 @Service
 public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final CartItemService cartItemService;
 
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository,
+            CartItemService cartItemService) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.cartItemService = cartItemService;
     }
 
     public ProductResponse convertResponse(Product product) {
@@ -68,7 +72,6 @@ public class ProductService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
         product.setCategory(category);
 
-        // Çoklu görsel ekle
         List<ProductImage> productImages = request.getImages().stream()
                 .filter(image -> image != null && !image.isEmpty())
                 .map(image -> {
@@ -87,10 +90,13 @@ public class ProductService {
         return convertResponse(saved);
     }
 
+    @Transactional
     public void deleteProduct(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found : " + id));
-        productRepository.delete(product);
+        // İlk olarak bu ürünle ilişkili tüm sepet öğelerini sil
+        cartItemService.deleteAllByProductId(id);
+
+        // Ardından ürünü sil
+        productRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
@@ -128,7 +134,6 @@ public class ProductService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Kategori bulunamadı"));
         existing.setCategory(category);
 
-        // Eski görselleri sil, yenilerini yükle
         existing.getImages().clear();
 
         List<ProductImage> newImages = request.getImages().stream()

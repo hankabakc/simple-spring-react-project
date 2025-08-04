@@ -167,7 +167,7 @@ export default function AdminProductsPage() {
                                             <TableCell>{product.categoryName}</TableCell>
                                             <TableCell>
                                                 <Avatar
-                                                    src={`data:image/jpeg;base64,${product.base64Image}`}
+                                                    src={`data:image/jpeg;base64,${product.base64Images[0]}`}
                                                     variant="rounded"
                                                     className="w-16 h-16"
                                                 />

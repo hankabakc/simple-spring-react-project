@@ -35,7 +35,7 @@ export default function DetailContent({ product }: DetailContentProps) {
                 <CardContent className="p-8 flex flex-col items-center">
                     <CardMedia
                         component="img"
-                        image={`data:image/jpeg;base64,${product.base64Image}`}
+                        image={`data:image/jpeg;base64,${product.base64Images?.[0]}`}
                         alt={product.name}
                         className="w-full h-64 object-cover mb-default rounded"
                     />
