@@ -28,8 +28,9 @@ import {
     deleteProductById
 } from '@/services/productService';
 import { fetchAllCategories } from '@/services/categoryService';
+import Navbar from '@/components/Navbar';
 
-export default function AdminProductList() {
+export default function AdminProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
@@ -88,102 +89,111 @@ export default function AdminProductList() {
     };
 
     return (
-        <Box className="p-8">
-            <Typography variant="h5" className="font-bold mb-6">
-                Product List
-            </Typography>
+        <>
+            <Navbar
+                search=""
+                onSearchChange={() => { }}
+                onSearchSubmit={() => { }}
+            />
 
-            <Box className="flex flex-wrap items-center gap-4 mb-8">
-                <TextField
-                    label="Search Product"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-64"
-                />
-                <FormControl className="w-64">
-                    <InputLabel id="category-select-label">Select Category</InputLabel>
-                    <Select
-                        labelId="category-select-label"
-                        multiple
-                        value={selectedCategoryIds}
-                        onChange={(e) => setSelectedCategoryIds(e.target.value as number[])}
-                    >
-                        {categories.map((cat) => (
-                            <MenuItem key={cat.id} value={cat.id}>
-                                {cat.name}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                <Button variant="contained" onClick={handleSearch}>
-                    Search
-                </Button>
-                <Link href="/admin/products/add">
-                    <Button variant="outlined">Add New Product</Button>
-                </Link>
-            </Box>
+            <Box className="p-8">
+                <Typography variant="h5" className="font-bold mb-6">
+                    Product List
+                </Typography>
+                <div className='h-5'></div>
 
-            {loading ? (
-                <div className="flex justify-center items-center h-40">
-                    <CircularProgress />
-                </div>
-            ) : (
-                <TableContainer component={Paper} className="shadow-md rounded-lg">
-                    <Table>
-                        <TableHead className="bg-gray-100">
-                            <TableRow>
-                                <TableCell><strong>ID</strong></TableCell>
-                                <TableCell><strong>Name</strong></TableCell>
-                                <TableCell><strong>Description</strong></TableCell>
-                                <TableCell><strong>Price</strong></TableCell>
-                                <TableCell><strong>Category</strong></TableCell>
-                                <TableCell><strong>Image</strong></TableCell>
-                                <TableCell><strong>Actions</strong></TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {products.length === 0 ? (
+                <Box className="flex flex-wrap items-center gap-4 mb-8">
+                    <TextField
+                        label="Search Product"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="w-64"
+                    />
+                    <FormControl className="w-64">
+                        <InputLabel id="category-select-label" >Select Category</InputLabel>
+                        <Select
+                            labelId="category-select-label"
+                            multiple
+                            value={selectedCategoryIds}
+                            onChange={(e) => setSelectedCategoryIds(e.target.value as number[])}
+                        >
+                            {categories.map((cat) => (
+                                <MenuItem key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <Button variant="contained" onClick={handleSearch}>
+                        Search
+                    </Button>
+                    <Link href="/admin/products/add">
+                        <Button variant="outlined">Add New Product</Button>
+                    </Link>
+                </Box>
+
+                {loading ? (
+                    <div className="flex justify-center items-center h-40">
+                        <CircularProgress />
+                    </div>
+                ) : (
+                    <TableContainer component={Paper} className="shadow-md rounded-lg">
+                        <Table>
+                            <TableHead className="bg-gray-100">
                                 <TableRow>
-                                    <TableCell colSpan={7} className="text-center">
-                                        No products found.
-                                    </TableCell>
+                                    <TableCell><strong>ID</strong></TableCell>
+                                    <TableCell><strong>Name</strong></TableCell>
+                                    <TableCell><strong>Description</strong></TableCell>
+                                    <TableCell><strong>Price</strong></TableCell>
+                                    <TableCell><strong>Category</strong></TableCell>
+                                    <TableCell><strong>Image</strong></TableCell>
+                                    <TableCell><strong>Actions</strong></TableCell>
                                 </TableRow>
-                            ) : (
-                                products.map((product) => (
-                                    <TableRow key={product.id}>
-                                        <TableCell>{product.id}</TableCell>
-                                        <TableCell>{product.name}</TableCell>
-                                        <TableCell>{product.explanation}</TableCell>
-                                        <TableCell>{product.price} ₺</TableCell>
-                                        <TableCell>{product.categoryName}</TableCell>
-                                        <TableCell>
-                                            <Avatar
-                                                src={`data:image/jpeg;base64,${product.base64Image}`}
-                                                variant="rounded"
-                                                className="w-16 h-16"
-                                            />
-                                        </TableCell>
-                                        <TableCell className="whitespace-nowrap">
-                                            <Link
-                                                href={`/admin/products/edit?id=${product.id}`}
-                                                className="text-blue-600 hover:text-blue-800 font-semibold transition mr-4"
-                                            >
-                                                Edit
-                                            </Link>
-                                            <button
-                                                onClick={() => handleDelete(product.id)}
-                                                className="text-red-600 hover:text-red-800 font-semibold transition"
-                                            >
-                                                Delete
-                                            </button>
+                            </TableHead>
+                            <TableBody>
+                                {products.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={7} className="text-center">
+                                            No products found.
                                         </TableCell>
                                     </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            )}
-        </Box>
+                                ) : (
+                                    products.map((product) => (
+                                        <TableRow key={product.id}>
+                                            <TableCell>{product.id}</TableCell>
+                                            <TableCell>{product.name}</TableCell>
+                                            <TableCell>{product.explanation}</TableCell>
+                                            <TableCell>{product.price} ₺</TableCell>
+                                            <TableCell>{product.categoryName}</TableCell>
+                                            <TableCell>
+                                                <Avatar
+                                                    src={`data:image/jpeg;base64,${product.base64Image}`}
+                                                    variant="rounded"
+                                                    className="w-16 h-16"
+                                                />
+                                            </TableCell>
+                                            <TableCell className="whitespace-nowrap">
+                                                <Link
+                                                    href={`/admin/products/edit?id=${product.id}`}
+                                                    className="text-blue-600 hover:text-blue-800 font-semibold transition mr-4"
+                                                >
+                                                    Edit
+                                                </Link>
+                                                <button
+                                                    onClick={() => handleDelete(product.id)}
+                                                    className="text-red-600 hover:text-red-800 font-semibold transition"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                )}
+            </Box>
+        </>
     );
 }
