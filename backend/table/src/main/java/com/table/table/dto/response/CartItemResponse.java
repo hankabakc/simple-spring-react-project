@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 public class CartItemResponse {
     private Long productId;
     private String productName;
-    private String productImage; // sadece ilk görsel
+    private String productImage;
     private BigDecimal productPrice;
     private Integer quantity;
 

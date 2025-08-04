@@ -1,13 +1,8 @@
 package com.table.table.model;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.table.table.converter.StringListConverter;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -38,15 +33,9 @@ public class Product {
     private String explanation;
 
     @Column(name = "base64_image", columnDefinition = "TEXT")
-    @Convert(converter = StringListConverter.class)
-    private List<String> base64Image = new ArrayList<>();
+    private String base64Image;
 
-    // Constructors
-    public Product() {
-    }
-
-    public Product(Long id, Category category, String name, BigDecimal price, String explanation,
-            List<String> base64Image) {
+    public Product(Long id, Category category, String name, BigDecimal price, String explanation, String base64Image) {
         this.id = id;
         this.category = category;
         this.name = name;
@@ -55,7 +44,8 @@ public class Product {
         this.base64Image = base64Image;
     }
 
-    // Getters & Setters
+    public Product() {
+    }
 
     public Long getId() {
         return id;
@@ -97,11 +87,12 @@ public class Product {
         this.explanation = explanation;
     }
 
-    public List<String> getBase64Image() {
+    public String getBase64Image() {
         return base64Image;
     }
 
-    public void setBase64Image(List<String> base64Image) {
+    public void setBase64Image(String base64Image) {
         this.base64Image = base64Image;
     }
+
 }

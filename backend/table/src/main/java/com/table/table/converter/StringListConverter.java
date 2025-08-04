@@ -16,6 +16,7 @@ public class StringListConverter implements AttributeConverter<List<String>, Str
 
     @Override
     public String convertToDatabaseColumn(List<String> list) {
+
         try {
             return objectMapper.writeValueAsString(list);
         } catch (IOException e) {
@@ -25,6 +26,7 @@ public class StringListConverter implements AttributeConverter<List<String>, Str
 
     @Override
     public List<String> convertToEntityAttribute(String json) {
+        System.out.println("CONVERT TO ENTITY: " + json);
         try {
             return objectMapper.readValue(json, new TypeReference<>() {
             });

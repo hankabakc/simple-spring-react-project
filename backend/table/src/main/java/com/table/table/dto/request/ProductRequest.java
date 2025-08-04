@@ -1,7 +1,6 @@
 package com.table.table.dto.request;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,7 +10,7 @@ public class ProductRequest {
     private BigDecimal price;
     private String explanation;
     private Long categoryId;
-    private List<MultipartFile> images;
+    private MultipartFile image;
 
     // Getter - Setter
 
@@ -55,11 +54,11 @@ public class ProductRequest {
         this.categoryId = categoryId;
     }
 
-    public List<MultipartFile> getImages() {
-        return images;
+    public MultipartFile getImage() {
+        return image;
     }
 
-    public void setImages(List<MultipartFile> images) {
-        this.images = images;
+    public void setImage(MultipartFile image) {
+        this.image = image;
     }
 }
