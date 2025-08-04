@@ -39,7 +39,7 @@ export default function CartItemRow({
             <ListItem className="py-4 flex items-center justify-between">
                 <div className="flex items-center">
                     <img
-                        src={`data:image/jpeg;base64,${item.productImage}`}
+                        src={`data:image/jpeg;base64,${item.productImages[0]}`}
                         alt={item.productName}
                         className="w-24 h-24 object-cover rounded-lg mr-4 shadow-md"
                     />

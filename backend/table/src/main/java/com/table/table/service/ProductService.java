@@ -2,7 +2,9 @@ package com.table.table.service;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -17,7 +19,6 @@ import com.table.table.model.Product;
 import com.table.table.model.ProductImage;
 import com.table.table.repository.CategoryRepository;
 import com.table.table.repository.ProductRepository;
-import com.table.table.repository.CartItemRepository; // Ekleyin
 
 @Service
 public class ProductService {
@@ -72,7 +73,11 @@ public class ProductService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
         product.setCategory(category);
 
-        List<ProductImage> productImages = request.getImages().stream()
+        // Hata veren kısmı düzeltin
+        // getImages() null dönebileceği için Optional veya ternary operator kullanın
+        List<ProductImage> productImages = Optional.ofNullable(request.getImages())
+                .orElse(Collections.emptyList()) // Eğer null ise boş bir liste kullan
+                .stream()
                 .filter(image -> image != null && !image.isEmpty())
                 .map(image -> {
                     try {
@@ -134,9 +139,12 @@ public class ProductService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Kategori bulunamadı"));
         existing.setCategory(category);
 
+        // Hata veren kısmı düzeltin
         existing.getImages().clear();
 
-        List<ProductImage> newImages = request.getImages().stream()
+        List<ProductImage> newImages = Optional.ofNullable(request.getImages())
+                .orElse(Collections.emptyList()) // Eğer null ise boş bir liste kullan
+                .stream()
                 .filter(image -> image != null && !image.isEmpty())
                 .map(image -> {
                     try {
