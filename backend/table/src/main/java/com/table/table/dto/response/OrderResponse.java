@@ -12,12 +12,13 @@ public class OrderResponse {
     private Integer quantity;
     private BigDecimal totalPrice;
     private String adminMessage;
+    private String status;
 
     public OrderResponse() {
     }
 
     public OrderResponse(Long id, Long orderId, String username, String productName, BigDecimal price,
-            Integer quantity, String adminMessage) {
+            Integer quantity, String adminMessage, String status) {
         this.id = id;
         this.orderId = orderId;
         this.username = username;
@@ -26,9 +27,8 @@ public class OrderResponse {
         this.quantity = quantity;
         this.totalPrice = price.multiply(BigDecimal.valueOf(quantity));
         this.adminMessage = adminMessage;
+        this.status = status;
     }
-
-    // Getter - Setter
 
     public Long getId() {
         return id;
@@ -92,5 +92,13 @@ public class OrderResponse {
 
     public void setAdminMessage(String adminMessage) {
         this.adminMessage = adminMessage;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

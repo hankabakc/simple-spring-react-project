@@ -38,6 +38,9 @@ public class Order {
     @Column(name = "admin_message")
     private String adminMessage;
 
+    @Column(name = "status")
+    private String status;
+
     public Order() {
     }
 
@@ -99,5 +102,13 @@ public class Order {
 
     public void setAdminMessage(String adminMessage) {
         this.adminMessage = adminMessage;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

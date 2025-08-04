@@ -20,6 +20,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import Navbar from '@/components/Navbar';
 import { groupOrders } from '@/utils/orderUtils';
+import AdminDeleteModal from '@/components/AdminDeleteModal';
 
 export default function AdminOrdersPage() {
     const [ordersGrouped, setOrdersGrouped] = useState<Record<number, OrderResponse[]>>({});
@@ -27,6 +28,8 @@ export default function AdminOrdersPage() {
         username: '',
         productName: '',
     });
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedOrderGroup, setSelectedOrderGroup] = useState<OrderResponse[] | null>(null);
 
     const fetchOrders = async () => {
         const response = await api.get('/api/admin/orders');
@@ -45,16 +48,28 @@ export default function AdminOrdersPage() {
         setOrdersGrouped(grouped);
     };
 
-    const deleteOrderGroup = async (orderGroup: OrderResponse[]) => {
+    const handleDeleteClick = (group: OrderResponse[]) => {
+        setSelectedOrderGroup(group);
+        setModalOpen(true);
+    };
+
+    const handleConfirmDelete = async (adminMessage: string) => {
+        if (!selectedOrderGroup) return;
+
         try {
             await Promise.all(
-                orderGroup.map((order) =>
-                    api.delete(`/api/admin/orders/${order.id}`)
+                selectedOrderGroup.map((order) =>
+                    api.post('/api/admin/orders/delete', {
+                        orderId: order.id,
+                        adminMessage: adminMessage,
+                    })
                 )
             );
             fetchOrders();
+            setModalOpen(false);
+            setSelectedOrderGroup(null);
         } catch (error) {
-            console.error('Silme sırasında hata:', error);
+            console.error('Silme hatası:', error);
             alert('Silme işlemi başarısız oldu.');
         }
     };
@@ -105,7 +120,7 @@ export default function AdminOrdersPage() {
                                 </Typography>
                                 <IconButton
                                     color="error"
-                                    onClick={() => deleteOrderGroup(orderGroup)}
+                                    onClick={() => handleDeleteClick(orderGroup)}
                                 >
                                     <DeleteIcon />
                                 </IconButton>
@@ -141,6 +156,12 @@ export default function AdminOrdersPage() {
                     ))
                 )}
             </Box>
+
+            <AdminDeleteModal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+            />
         </>
     );
 }

@@ -44,5 +44,11 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="xml-chg-6" author="han">
+        <addColumn tableName="orders">
+            <column name="status" type="VARCHAR(50)" />
+        </addColumn>
+    </changeSet>
+
 
 </databaseChangeLog>
