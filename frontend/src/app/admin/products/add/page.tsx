@@ -26,9 +26,12 @@ export default function AddProductPage() {
     };
 
     return (
-        <Box className="p-8 flex justify-center">
+        <Box className="min-h-screen bg-blue-300 flex items-center justify-center p-4">
             <Paper elevation={3} className="p-6 w-full max-w-xl">
-                <Typography variant="h6" className="mb-4 font-bold">Add New Product</Typography>
+                <Typography variant="h6" className="mb-4 font-bold text-center">
+                    ADD NEW PRODUCT
+                </Typography>
+                <div className="h-5"></div>
                 <ProductForm
                     onSubmit={handleSubmit}
                     categories={categories}

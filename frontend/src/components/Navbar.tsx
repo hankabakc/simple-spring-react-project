@@ -69,7 +69,7 @@ export default function Navbar({ search, onSearchChange, onSearchSubmit }: Navba
             <AppBar
                 position="static"
             >
-                <Toolbar className="flex justify-between items-center px-5 h-20">
+                <Toolbar className="relative px-5 h-20 bg-blue-600">
                     <Box className="flex items-center">
                         <TextField
                             variant="outlined"
@@ -88,49 +88,57 @@ export default function Navbar({ search, onSearchChange, onSearchSubmit }: Navba
                             }}
                         />
                     </Box>
-                    <ButtonGroup variant="text" className="space-x-2">
-                        {user?.role === 'ADMIN' && (
-                            <>
-                                <Button
-                                    className="navbar-button text-white"
-                                    onClick={() => router.push('/admin/orders')}
-                                >
-                                    Admin Orders
-                                </Button>
-                                <Button
-                                    className="navbar-button text-white"
-                                    onClick={() => router.push('/admin/products')}
-                                >
-                                    Admin Products
-                                </Button>
-                            </>
-                        )}
+                    <Typography
+                        variant="h5"
+                        className="absolute left-1/2 -translate-x-1/2 text-white font-bold cursor-pointer"
+                        onClick={() => router.push('/products')}
+                    >
+                        LOGO
+                    </Typography>
+                    <Box className="ml-auto">
+                        <ButtonGroup variant="text" className="space-x-2">
+                            {user?.role === 'ADMIN' && (
+                                <>
+                                    <Button
+                                        className="navbar-button text-white"
+                                        onClick={() => router.push('/admin/orders')}
+                                    >
+                                        Admin Orders
+                                    </Button>
+                                    <Button
+                                        className="navbar-button text-white"
+                                        onClick={() => router.push('/admin/products')}
+                                    >
+                                        Admin Products
+                                    </Button>
+                                </>
+                            )}
 
-                        {user && (
+                            {user && (
+                                <Button
+                                    startIcon={<ReceiptLongIcon />}
+                                    className="navbar-button text-white"
+                                    onClick={goToOrders}
+                                >
+                                    Orders
+                                </Button>
+                            )}
                             <Button
-                                startIcon={<ReceiptLongIcon />}
+                                startIcon={<ShoppingCartIcon />}
                                 className="navbar-button text-white"
-                                onClick={goToOrders}
+                                onClick={handleCartClick}
                             >
-                                Orders
+                                Cart
                             </Button>
-                        )}
-                        <Button
-                            startIcon={<ShoppingCartIcon />}
-                            className="navbar-button text-white"
-                            onClick={handleCartClick}
-                        >
-                            Cart
-                        </Button>
-                        <Button
-                            startIcon={<PersonIcon />}
-                            onClick={handleUserClick}
-                            className="navbar-button text-white"
-                        >
-                            {user ? 'Logout' : 'Login'}
-                        </Button>
-                    </ButtonGroup>
-
+                            <Button
+                                startIcon={<PersonIcon />}
+                                onClick={handleUserClick}
+                                className="navbar-button text-white"
+                            >
+                                {user ? 'Logout' : 'Login'}
+                            </Button>
+                        </ButtonGroup>
+                    </Box>
                 </Toolbar>
             </AppBar>
 

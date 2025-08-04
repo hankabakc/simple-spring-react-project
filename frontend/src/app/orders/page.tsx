@@ -57,7 +57,7 @@ export default function OrdersPage() {
         <>
             <Navbar search="" onSearchChange={noop} onSearchSubmit={noop} />
 
-            <Box className="min-h-screen bg-gray-50">
+            <Box className="min-h-screen bg-blue-300">
                 <Container maxWidth="lg" className="py-8">
                     {/* Header Section */}
                     <Box className="mb-8">
