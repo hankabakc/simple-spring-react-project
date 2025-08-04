@@ -67,6 +67,7 @@ export type OrderResponse = {
     price: number;
     quantity: number;
     totalPrice: number;
+    status: 'PENDING' | 'COMPLETED' | 'CANCELLED';
 }
 
 export type CartItemResponse = {
@@ -127,3 +128,9 @@ export type ProductImageSelectorProps = {
     selectedImage: string | null;
     onSelect: (img: string) => void;
 };
+
+export type AdminDeleteModalProps = {
+    open: boolean;
+    onClose: () => void;
+    onConfirm: (adminMessage: string) => void;
+}

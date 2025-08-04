@@ -169,7 +169,7 @@ export default function OrdersPage() {
                                                             {orderGroup.map((item, idx) => (
                                                                 <Box
                                                                     key={idx}
-                                                                    className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm border"
+                                                                    className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm border relative"
                                                                 >
                                                                     <Box className="flex-1">
                                                                         <Typography
@@ -184,10 +184,19 @@ export default function OrdersPage() {
                                                                         >
                                                                             Quantity: {item.quantity}
                                                                         </Typography>
+
+                                                                        {item.status === 'CANCELLED' && (
+                                                                            <Typography
+                                                                                variant="caption"
+                                                                                className="text-red-600 font-semibold mt-1"
+                                                                            >
+                                                                                This order was cancelled.
+                                                                            </Typography>
+                                                                        )}
                                                                     </Box>
                                                                     <Chip
                                                                         label={`${item.totalPrice} ₺`}
-                                                                        color="success"
+                                                                        color={item.status === 'CANCELLED' ? 'error' : 'success'}
                                                                         variant="outlined"
                                                                         size="small"
                                                                         className="font-semibold"

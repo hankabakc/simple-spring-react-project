@@ -39,7 +39,8 @@ public class OrderService {
                 order.getName(),
                 order.getPrice(),
                 order.getQuantity(),
-                order.getAdminMessage());
+                order.getAdminMessage(),
+                order.getStatus());
     }
 
     @Transactional
@@ -61,6 +62,7 @@ public class OrderService {
             order.setPrice(item.getProduct().getPrice());
             order.setQuantity(item.getQuantity());
             order.setOrderGroupId(groupId);
+            order.setStatus("CREATED");
             return order;
         }).toList();
 
@@ -111,7 +113,7 @@ public class OrderService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
 
         order.setAdminMessage(adminMessage);
+        order.setStatus("DELETED");
         orderRepository.save(order);
-        orderRepository.delete(order);
     }
 }
