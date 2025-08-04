@@ -1,27 +1,30 @@
 package com.table.table.dto.response;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class ProductResponse {
     private Long id;
     private String name;
     private String explanation;
     private BigDecimal price;
-    private String base64Image;
+    private List<String> base64Images; // ← çoklu görsel için değiştirildi
     private String categoryName;
 
     public ProductResponse() {
     }
 
-    public ProductResponse(Long id, String name, String explanation, BigDecimal price, String base64Image,
+    public ProductResponse(Long id, String name, String explanation, BigDecimal price, List<String> base64Images,
             String categoryName) {
         this.id = id;
         this.name = name;
         this.explanation = explanation;
         this.price = price;
-        this.base64Image = base64Image;
+        this.base64Images = base64Images;
         this.categoryName = categoryName;
     }
+
+    // Getter - Setter
 
     public Long getId() {
         return id;
@@ -55,12 +58,12 @@ public class ProductResponse {
         this.price = price;
     }
 
-    public String getBase64Image() {
-        return base64Image;
+    public List<String> getBase64Images() {
+        return base64Images;
     }
 
-    public void setBase64Image(String base64Image) {
-        this.base64Image = base64Image;
+    public void setBase64Images(List<String> base64Images) {
+        this.base64Images = base64Images;
     }
 
     public String getCategoryName() {

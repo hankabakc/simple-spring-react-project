@@ -1,25 +1,28 @@
 package com.table.table.dto.response;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class CartItemResponse {
     private Long productId;
     private String productName;
-    private String productImage;
+    private List<String> productImages; // ← Güncellendi
     private BigDecimal productPrice;
     private Integer quantity;
 
     public CartItemResponse() {
     }
 
-    public CartItemResponse(Long productId, String productName, String productImage, BigDecimal productPrice,
+    public CartItemResponse(Long productId, String productName, List<String> productImages, BigDecimal productPrice,
             Integer quantity) {
         this.productId = productId;
         this.productName = productName;
-        this.productImage = productImage;
+        this.productImages = productImages;
         this.productPrice = productPrice;
         this.quantity = quantity;
     }
+
+    // Getters - Setters
 
     public Long getProductId() {
         return productId;
@@ -37,12 +40,12 @@ public class CartItemResponse {
         this.productName = productName;
     }
 
-    public String getProductImage() {
-        return productImage;
+    public List<String> getProductImages() {
+        return productImages;
     }
 
-    public void setProductImage(String productImage) {
-        this.productImage = productImage;
+    public void setProductImages(List<String> productImages) {
+        this.productImages = productImages;
     }
 
     public BigDecimal getProductPrice() {

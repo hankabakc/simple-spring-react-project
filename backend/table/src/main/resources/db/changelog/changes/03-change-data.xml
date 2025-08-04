@@ -17,5 +17,26 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="xml-chg-3" author="han">
+        <dropColumn tableName="product" columnName="base64_image" />
+    </changeSet>
+
+    <changeSet id="xml-chg-4" author="han">
+        <createTable tableName="product_image">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" />
+            </column>
+
+            <column name="base64_image" type="TEXT">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="product_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_product_image_product"
+                    referencedTableName="product" referencedColumnNames="id" />
+            </column>
+        </createTable>
+    </changeSet>
+
 
 </databaseChangeLog>
