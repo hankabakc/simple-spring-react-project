@@ -38,5 +38,11 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="xml-chg-5" author="han">
+        <addColumn tableName="orders">
+            <column name="admin_message" type="TEXT" />
+        </addColumn>
+    </changeSet>
+
 
 </databaseChangeLog>
