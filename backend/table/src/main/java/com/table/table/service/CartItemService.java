@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.table.table.dto.response.CartItemResponse;
 import com.table.table.model.CartItem;
 import com.table.table.model.Product;
+import com.table.table.model.ProductImage;
 import com.table.table.model.User;
 import com.table.table.repository.CartItemRepository;
 import com.table.table.repository.ProductRepository;
@@ -32,12 +33,19 @@ public class CartItemService {
     }
 
     private CartItemResponse toDto(CartItem item) {
+        Product product = item.getProduct();
+
+        List<String> imageList = product.getImages().stream()
+                .map(ProductImage::getBase64Image)
+                .collect(Collectors.toList());
+
         CartItemResponse dto = new CartItemResponse();
-        dto.setProductId(item.getProduct().getId());
-        dto.setProductName(item.getProduct().getName());
-        dto.setProductImage(item.getProduct().getBase64Image());
-        dto.setProductPrice(item.getProduct().getPrice());
+        dto.setProductId(product.getId());
+        dto.setProductName(product.getName());
+        dto.setProductImages(imageList);
+        dto.setProductPrice(product.getPrice());
         dto.setQuantity(item.getQuantity());
+
         return dto;
     }
 
@@ -64,7 +72,6 @@ public class CartItemService {
     @Transactional(readOnly = true)
     public List<CartItemResponse> getUserCart(Long userId) {
         List<CartItem> items = cartItemRepository.findByUserIdOrderByIdAsc(userId);
-        ;
         return items.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
@@ -108,5 +115,4 @@ public class CartItemService {
             cartItemRepository.save(item);
         }
     }
-
 }

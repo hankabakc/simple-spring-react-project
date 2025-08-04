@@ -38,7 +38,7 @@ export default function Content({ products }: { products: Product[] }) {
                             <CardContent className="p-default w-full flex flex-col items-center">
                                 <CardMedia
                                     component="img"
-                                    image={`data:image/jpeg;base64,${product.base64Image?.[0]}`}
+                                    image={`data:image/jpeg;base64,${product.base64Image}`}
                                     alt={product.name}
                                     className="w-full h-48 object-cover mb-default rounded"
                                 />

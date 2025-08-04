@@ -1,7 +1,10 @@
 package com.table.table.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -32,20 +36,21 @@ public class Product {
     @Column(length = 255)
     private String explanation;
 
-    @Column(name = "base64_image", columnDefinition = "TEXT")
-    private String base64Image;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductImage> images = new ArrayList<>();
 
-    public Product(Long id, Category category, String name, BigDecimal price, String explanation, String base64Image) {
+    public Product() {
+    }
+
+    public Product(Long id, Category category, String name, BigDecimal price, String explanation) {
         this.id = id;
         this.category = category;
         this.name = name;
         this.price = price;
         this.explanation = explanation;
-        this.base64Image = base64Image;
     }
 
-    public Product() {
-    }
+    // Getter ve Setter'lar
 
     public Long getId() {
         return id;
@@ -87,12 +92,11 @@ public class Product {
         this.explanation = explanation;
     }
 
-    public String getBase64Image() {
-        return base64Image;
+    public List<ProductImage> getImages() {
+        return images;
     }
 
-    public void setBase64Image(String base64Image) {
-        this.base64Image = base64Image;
+    public void setImages(List<ProductImage> images) {
+        this.images = images;
     }
-
 }

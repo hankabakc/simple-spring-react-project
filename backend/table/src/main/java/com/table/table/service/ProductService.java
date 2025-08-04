@@ -8,13 +8,13 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.table.table.dto.request.ProductRequest;
 import com.table.table.dto.response.ProductResponse;
 import com.table.table.model.Category;
 import com.table.table.model.Product;
+import com.table.table.model.ProductImage;
 import com.table.table.repository.CategoryRepository;
 import com.table.table.repository.ProductRepository;
 
@@ -30,28 +30,17 @@ public class ProductService {
     }
 
     public ProductResponse convertResponse(Product product) {
-        ProductResponse dto = new ProductResponse();
-        dto.setId(product.getId());
-        dto.setName(product.getName());
-        dto.setExplanation(product.getExplanation());
-        dto.setPrice(product.getPrice());
-        dto.setBase64Image(product.getBase64Image());
-        dto.setCategoryName(product.getCategory().getName());
-        return dto;
-    }
+        List<String> images = product.getImages().stream()
+                .map(ProductImage::getBase64Image)
+                .collect(Collectors.toList());
 
-    private ProductResponse mapToProductResponse(Product product) {
-        if (product == null) {
-            return null;
-        }
-        String categoryName = (product.getCategory() != null) ? product.getCategory().getName() : null;
         return new ProductResponse(
                 product.getId(),
                 product.getName(),
                 product.getExplanation(),
                 product.getPrice(),
-                product.getBase64Image(),
-                categoryName);
+                images,
+                product.getCategory().getName());
     }
 
     @Transactional(readOnly = true)
@@ -79,15 +68,20 @@ public class ProductService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
         product.setCategory(category);
 
-        MultipartFile image = request.getImage();
-        if (image != null && !image.isEmpty()) {
-            try {
-                String base64 = Base64.getEncoder().encodeToString(image.getBytes());
-                product.setBase64Image(base64);
-            } catch (IOException e) {
-                throw new RuntimeException("Resim dönüştürme hatası", e);
-            }
-        }
+        // Çoklu görsel ekle
+        List<ProductImage> productImages = request.getImages().stream()
+                .filter(image -> image != null && !image.isEmpty())
+                .map(image -> {
+                    try {
+                        String base64 = Base64.getEncoder().encodeToString(image.getBytes());
+                        return new ProductImage(base64, product);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Resim dönüştürme hatası", e);
+                    }
+                })
+                .collect(Collectors.toList());
+
+        product.setImages(productImages);
 
         Product saved = productRepository.save(product);
         return convertResponse(saved);
@@ -117,7 +111,7 @@ public class ProductService {
         }
 
         return products.stream()
-                .map(this::mapToProductResponse)
+                .map(this::convertResponse)
                 .collect(Collectors.toList());
     }
 
@@ -130,21 +124,26 @@ public class ProductService {
         existing.setPrice(request.getPrice());
         existing.setExplanation(request.getExplanation());
 
-        // Kategori güncelle
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Kategori bulunamadı"));
         existing.setCategory(category);
 
-        // Görsel varsa güncelle (base64 encode)
-        MultipartFile image = request.getImage();
-        if (image != null && !image.isEmpty()) {
-            try {
-                String base64 = Base64.getEncoder().encodeToString(image.getBytes());
-                existing.setBase64Image(base64);
-            } catch (IOException e) {
-                throw new RuntimeException("Resim dönüştürme hatası", e);
-            }
-        }
+        // Eski görselleri sil, yenilerini yükle
+        existing.getImages().clear();
+
+        List<ProductImage> newImages = request.getImages().stream()
+                .filter(image -> image != null && !image.isEmpty())
+                .map(image -> {
+                    try {
+                        String base64 = Base64.getEncoder().encodeToString(image.getBytes());
+                        return new ProductImage(base64, existing);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Resim dönüştürme hatası", e);
+                    }
+                })
+                .collect(Collectors.toList());
+
+        existing.getImages().addAll(newImages);
 
         Product saved = productRepository.save(existing);
         return convertResponse(saved);
