@@ -35,11 +35,7 @@ public class CartItemService {
         CartItemResponse dto = new CartItemResponse();
         dto.setProductId(item.getProduct().getId());
         dto.setProductName(item.getProduct().getName());
-
-        List<String> images = item.getProduct().getBase64Image();
-        String firstImage = (images != null && !images.isEmpty()) ? images.get(0) : null;
-        dto.setProductImage(firstImage);
-
+        dto.setProductImage(item.getProduct().getBase64Image());
         dto.setProductPrice(item.getProduct().getPrice());
         dto.setQuantity(item.getQuantity());
         return dto;

@@ -79,22 +79,13 @@ public class ProductService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
         product.setCategory(category);
 
-        List<MultipartFile> images = request.getImages();
-        if (images != null && !images.isEmpty()) {
+        MultipartFile image = request.getImage();
+        if (image != null && !image.isEmpty()) {
             try {
-                List<String> base64List = images.stream()
-                        .filter(image -> !image.isEmpty())
-                        .map(image -> {
-                            try {
-                                return Base64.getEncoder().encodeToString(image.getBytes());
-                            } catch (IOException e) {
-                                throw new RuntimeException("Resim dönüştürme hatası", e);
-                            }
-                        })
-                        .toList();
-                product.setBase64Image(base64List);
-            } catch (Exception e) {
-                throw new RuntimeException("Görseller işlenirken hata oluştu", e);
+                String base64 = Base64.getEncoder().encodeToString(image.getBytes());
+                product.setBase64Image(base64);
+            } catch (IOException e) {
+                throw new RuntimeException("Resim dönüştürme hatası", e);
             }
         }
 
@@ -139,26 +130,19 @@ public class ProductService {
         existing.setPrice(request.getPrice());
         existing.setExplanation(request.getExplanation());
 
+        // Kategori güncelle
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Kategori bulunamadı"));
         existing.setCategory(category);
 
-        List<MultipartFile> images = request.getImages();
-        if (images != null && !images.isEmpty()) {
+        // Görsel varsa güncelle (base64 encode)
+        MultipartFile image = request.getImage();
+        if (image != null && !image.isEmpty()) {
             try {
-                List<String> base64List = images.stream()
-                        .filter(image -> !image.isEmpty())
-                        .map(image -> {
-                            try {
-                                return Base64.getEncoder().encodeToString(image.getBytes());
-                            } catch (IOException e) {
-                                throw new RuntimeException("Resim dönüştürme hatası", e);
-                            }
-                        })
-                        .toList();
-                existing.setBase64Image(base64List);
-            } catch (Exception e) {
-                throw new RuntimeException("Görseller güncellenirken hata oluştu", e);
+                String base64 = Base64.getEncoder().encodeToString(image.getBytes());
+                existing.setBase64Image(base64);
+            } catch (IOException e) {
+                throw new RuntimeException("Resim dönüştürme hatası", e);
             }
         }
 
