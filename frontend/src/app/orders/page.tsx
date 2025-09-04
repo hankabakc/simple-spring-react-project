@@ -48,7 +48,6 @@ export default function OrdersPage() {
 
     const noop = () => { };
 
-    // Toplam fiyatı hesapla
     const calculateOrderTotal = (orderGroup: OrderResponse[]) => {
         return orderGroup.reduce((total, item) => total + item.totalPrice, 0);
     };
@@ -59,21 +58,14 @@ export default function OrdersPage() {
 
             <Box className="min-h-screen bg-blue-300">
                 <Container maxWidth="lg" className="py-8">
-                    {/* Header Section */}
                     <Box className="mb-8">
                         <Box className="flex items-center gap-3 mb-2">
                             <Receipt className="text-blue-600 text-3xl" />
-                            <Typography
-                                variant="h4"
-                                className="font-bold text-gray-800"
-                            >
+                            <Typography variant="h4" className="font-bold text-gray-800">
                                 Order History
                             </Typography>
                         </Box>
-                        <Typography
-                            variant="body1"
-                            className="text-gray-600"
-                        >
+                        <Typography variant="body1" className="text-gray-600">
                             Track your previous orders and view order details
                         </Typography>
                     </Box>
@@ -82,16 +74,10 @@ export default function OrdersPage() {
                         <Card className="text-center py-16">
                             <CardContent>
                                 <ShoppingBag className="text-gray-400 mb-4" style={{ fontSize: '4rem' }} />
-                                <Typography
-                                    variant="h6"
-                                    className="text-gray-600 mb-2"
-                                >
+                                <Typography variant="h6" className="text-gray-600 mb-2">
                                     No Orders Yet
                                 </Typography>
-                                <Typography
-                                    variant="body2"
-                                    className="text-gray-500"
-                                >
+                                <Typography variant="body2" className="text-gray-500">
                                     Your order history will appear here once you make your first purchase.
                                 </Typography>
                             </CardContent>
@@ -104,11 +90,7 @@ export default function OrdersPage() {
                                 const orderTotal = calculateOrderTotal(orderGroup);
 
                                 return (
-                                    <Fade
-                                        in={true}
-                                        timeout={300 + index * 100}
-                                        key={orderId}
-                                    >
+                                    <Fade in={true} timeout={300 + index * 100} key={orderId}>
                                         <Card
                                             className="overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer border-l-4 border-l-blue-500"
                                             elevation={2}
@@ -133,17 +115,11 @@ export default function OrdersPage() {
                                                             />
                                                         </Box>
 
-                                                        <Typography
-                                                            variant="h6"
-                                                            className="font-bold text-green-600 mb-1"
-                                                        >
+                                                        <Typography variant="h6" className="font-bold text-green-600 mb-1">
                                                             {orderTotal} ₺
                                                         </Typography>
 
-                                                        <Typography
-                                                            variant="body2"
-                                                            className="text-gray-500"
-                                                        >
+                                                        <Typography variant="body2" className="text-gray-500">
                                                             Click to {isOpen ? 'hide' : 'view'} order details
                                                         </Typography>
                                                     </Box>
@@ -159,10 +135,16 @@ export default function OrdersPage() {
                                                 <Collapse in={isOpen} timeout={300}>
                                                     <Divider className="my-4" />
                                                     <Box className="bg-gray-50 rounded-lg p-4">
-                                                        <Typography
-                                                            variant="subtitle2"
-                                                            className="font-semibold text-gray-700 mb-3"
-                                                        >
+                                                        {orderGroup[0].status === 'DELETED' && (
+                                                            <Typography
+                                                                variant="body2"
+                                                                className="text-red-600 font-semibold mb-4"
+                                                            >
+                                                                Bu sipariş silinmiştir. Sebep:{' '}
+                                                                {orderGroup[0].adminMessage || 'Belirtilmedi'}
+                                                            </Typography>
+                                                        )}
+                                                        <Typography variant="subtitle2" className="font-semibold text-gray-700 mb-3">
                                                             Order Items
                                                         </Typography>
                                                         <Stack spacing={2}>
@@ -184,19 +166,10 @@ export default function OrdersPage() {
                                                                         >
                                                                             Quantity: {item.quantity}
                                                                         </Typography>
-
-                                                                        {item.status === 'CANCELLED' && (
-                                                                            <Typography
-                                                                                variant="caption"
-                                                                                className="text-red-600 font-semibold mt-1"
-                                                                            >
-                                                                                This order was cancelled.
-                                                                            </Typography>
-                                                                        )}
                                                                     </Box>
                                                                     <Chip
                                                                         label={`${item.totalPrice} ₺`}
-                                                                        color={item.status === 'CANCELLED' ? 'error' : 'success'}
+                                                                        color="success"
                                                                         variant="outlined"
                                                                         size="small"
                                                                         className="font-semibold"
