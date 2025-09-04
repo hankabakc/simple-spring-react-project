@@ -67,9 +67,9 @@ export type OrderResponse = {
     price: number;
     quantity: number;
     totalPrice: number;
-    status: 'PENDING' | 'COMPLETED' | 'CANCELLED';
+    status: 'CREATED' | 'DELETED';
+    adminMessage?: string;
 }
-
 export type CartItemResponse = {
     productId: number;
     productName: string;

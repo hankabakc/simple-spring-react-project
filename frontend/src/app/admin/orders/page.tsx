@@ -15,7 +15,8 @@ import {
     TableCell,
     TableBody,
     IconButton,
-    Divider
+    Divider,
+    Alert,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Navbar from '@/components/Navbar';
@@ -89,6 +90,7 @@ export default function AdminOrdersPage() {
                     Order Management
                 </Typography>
                 <div className='h-5'></div>
+
                 <Box className="flex flex-wrap gap-4 mb-4">
                     <TextField
                         label="Username"
@@ -112,48 +114,60 @@ export default function AdminOrdersPage() {
                         No orders found yet.
                     </Typography>
                 ) : (
-                    Object.entries(ordersGrouped).map(([orderId, orderGroup]) => (
-                        <Paper key={orderId} className="p-4 mb-6 shadow-md">
-                            <Box className="flex justify-between items-center mb-2">
-                                <Typography variant="subtitle1" className="font-semibold">
-                                    Order ID: {orderId} — User: {orderGroup[0].username}
-                                </Typography>
-                                <IconButton
-                                    color="error"
-                                    onClick={() => handleDeleteClick(orderGroup)}
-                                >
-                                    <DeleteIcon />
-                                </IconButton>
-                            </Box>
+                    Object.entries(ordersGrouped).map(([orderId, orderGroup]) => {
+                        const isDeleted = orderGroup[0].status === 'DELETED';
+                        return (
+                            <Paper key={orderId} className="p-4 mb-6 shadow-md">
+                                <Box className="flex justify-between items-center mb-2">
+                                    <Typography variant="subtitle1" className="font-semibold">
+                                        Order ID: {orderId} — User: {orderGroup[0].username}
+                                    </Typography>
+                                    <IconButton
+                                        color="error"
+                                        onClick={() => handleDeleteClick(orderGroup)}
+                                    >
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </Box>
 
-                            <Table size="small">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Product</TableCell>
-                                        <TableCell>Quantity</TableCell>
-                                        <TableCell>Unit Price</TableCell>
-                                        <TableCell>Total</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {orderGroup.map((item, idx) => (
-                                        <TableRow key={idx}>
-                                            <TableCell>{item.productName}</TableCell>
-                                            <TableCell>{item.quantity}</TableCell>
-                                            <TableCell>{item.price} ₺</TableCell>
-                                            <TableCell>{item.totalPrice} ₺</TableCell>
+                                {isDeleted && (
+                                    <Alert severity="error" className="mb-3">
+                                        Bu sipariş iptal edilmiştir.
+                                        {orderGroup[0].adminMessage && (
+                                            <> Sebep: <strong>{orderGroup[0].adminMessage}</strong></>
+                                        )}
+                                    </Alert>
+                                )}
+
+                                <Table size="small">
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Product</TableCell>
+                                            <TableCell>Quantity</TableCell>
+                                            <TableCell>Unit Price</TableCell>
+                                            <TableCell>Total</TableCell>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                                    </TableHead>
+                                    <TableBody>
+                                        {orderGroup.map((item, idx) => (
+                                            <TableRow key={idx}>
+                                                <TableCell>{item.productName}</TableCell>
+                                                <TableCell>{item.quantity}</TableCell>
+                                                <TableCell>{item.price} ₺</TableCell>
+                                                <TableCell>{item.totalPrice} ₺</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
 
-                            <Divider className="my-2" />
-                            <Typography variant="body2" className="text-right font-bold">
-                                Total Order Amount:{' '}
-                                {orderGroup.reduce((sum, i) => sum + i.totalPrice, 0).toFixed(2)} ₺
-                            </Typography>
-                        </Paper>
-                    ))
+                                <Divider className="my-2" />
+                                <Typography variant="body2" className="text-right font-bold">
+                                    Total Order Amount:{' '}
+                                    {orderGroup.reduce((sum, i) => sum + i.totalPrice, 0).toFixed(2)} ₺
+                                </Typography>
+                            </Paper>
+                        );
+                    })
                 )}
             </Box>
 
