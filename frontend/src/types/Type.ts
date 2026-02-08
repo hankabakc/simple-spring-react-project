@@ -70,6 +70,7 @@ export type OrderResponse = {
     status: 'CREATED' | 'DELETED';
     adminMessage?: string;
 }
+
 export type CartItemResponse = {
     productId: number;
     productName: string;
