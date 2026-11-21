@@ -3,6 +3,7 @@ package com.table.table.security;
 import java.security.Key;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -13,10 +14,13 @@ import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtUtil {
-    private final String jwtSecret = "***REMOVED***";
     private final long jwtExpirationMs = 86400000;
 
-    private final Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    private final Key key;
+
+    public JwtUtil(@Value("${jwt.secret}") String jwtSecret) {
+        this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    }
 
     public String generateToken(Long userId, String username, String role, String email) { // Email parametresi hala var
                                                                                            // ama claim'e username
